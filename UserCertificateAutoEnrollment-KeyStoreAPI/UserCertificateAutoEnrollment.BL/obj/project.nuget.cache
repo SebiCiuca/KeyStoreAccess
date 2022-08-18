@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "ZV3gN7SgPp1zKeonQ9sb4wbuLGS0u9Jk1INsXWNyONfERvZQs5iCD74lz/ukCtWVbTnZD9pGdBweSirzJBSUfw==",
+  "success": true,
+  "projectFilePath": "C:\\Repos\\Metafinanz\\UserCertificateAutoEnrollment\\UserCertificateAutoEnrollment-KeyStoreAPI\\UserCertificateAutoEnrollment.BL\\UserCertificateAutoEnrollment.BL.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.bcrypt\\0.7.124\\pinvoke.bcrypt.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.kernel32\\0.7.124\\pinvoke.kernel32.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.ncrypt\\0.7.124\\pinvoke.ncrypt.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.windows.core\\0.7.124\\pinvoke.windows.core.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+  ],
+  "logs": []
+}

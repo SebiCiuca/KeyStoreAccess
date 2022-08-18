@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "VbqvUGOGb/P2AiscJdOQIpiH6J5ZLKknlJyKn+okQOI=",
+  "Source": "UCAE-KeyStoreSelfHostedApi",
+  "BasePath": "_content/UCAE-KeyStoreSelfHostedApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

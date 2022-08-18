@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "dgSpecHash": "Mmhf+ddCeQEapQSu3uZaiTFw44iUbJvPJrA5nWc8j58BeZhSzwHuaJfPFzVuDDZIdQQxwNgWRyJswwZXlTdjQg==",
+  "success": true,
+  "projectFilePath": "C:\\Repos\\Metafinanz\\UserCertificateAutoEnrollment\\UserCertificateAutoEnrollment-KeyStoreAPI\\UserCertificateAutoEnrollment.BL.macOS\\UserCertificateAutoEnrollment.BL.macOS.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pclcrypto\\2.0.147\\pclcrypto.2.0.147.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.bcrypt\\0.7.124\\pinvoke.bcrypt.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.kernel32\\0.7.124\\pinvoke.kernel32.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.ncrypt\\0.7.124\\pinvoke.ncrypt.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.windows.core\\0.7.124\\pinvoke.windows.core.0.7.124.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\validation\\2.2.8\\validation.2.2.8.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'PCLCrypto 2.0.147' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "PCLCrypto",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Validation 2.2.8' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Validation",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}
