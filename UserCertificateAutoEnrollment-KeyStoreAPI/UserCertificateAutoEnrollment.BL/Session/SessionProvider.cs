@@ -63,7 +63,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
 
             if (!sessionFound)
             {
-                throw new Exception("Session not found");
+                return null;
             }
 
             return session;

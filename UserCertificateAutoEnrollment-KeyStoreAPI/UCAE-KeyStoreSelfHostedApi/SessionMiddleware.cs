@@ -26,11 +26,15 @@ namespace UCAE_KeyStoreSelfHostedApi
                 if (session == null)
                 {
                     await HandleSessionMiddlewareError(httpContext, $"Can't do request, invalid {nameof(sessionKey)}");
+
+                    return;
                 }
             }
             catch (Exception ex)
             {
                 await HandleSessionMiddlewareError(httpContext, ex.Message);
+
+                return;
             }
 
 

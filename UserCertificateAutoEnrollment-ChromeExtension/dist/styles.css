@@ -39,13 +39,15 @@ margin-bottom: 0.75rem;
 }
 
 .container {
-    width: 200px;
+    width: 400px;
     height: 200px;
     text-align: center;
 }
 
 
 textarea {
+    width: 350px;
+    min-height: 200px;
     overflow: auto;
     resize: vertical;
 }
