@@ -13,10 +13,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\UserCertificateAutoEnrollment.BL.macOS\UserCertificateAutoEnrollment.BL.macOS.csproj" />
-    <ProjectReference Include="..\UserCertificateAutoEnrollment.BL\UserCertificateAutoEnrollment.BL.csproj" />
-    <ProjectReference Include="..\UserCetrificateAutoEnrollment.BL.Windows\UserCetrificateAutoEnrollment.BL.Windows.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -728,19 +728,19 @@
           }
         }
       },
-      "PCLCrypto/2.0.147": {
+      "NLog.WindowsEventLog/5.0.2": {
         "type": "package",
         "dependencies": {
-          "PInvoke.NCrypt": "0.3.2",
-          "Validation": "2.2.8"
+          "NLog": "5.0.2",
+          "System.Diagnostics.EventLog": "4.5.0"
         },
         "compile": {
-          "lib/net45/PCLCrypto.dll": {
+          "lib/netstandard2.0/NLog.WindowsEventLog.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net45/PCLCrypto.dll": {
+          "lib/netstandard2.0/NLog.WindowsEventLog.dll": {
             "related": ".xml"
           }
         }
@@ -2304,24 +2304,12 @@
           "lib/netstandard1.3/System.Xml.XmlDocument.dll": {}
         }
       },
-      "Validation/2.2.8": {
-        "type": "package",
-        "compile": {
-          "lib/dotnet/Validation.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/dotnet/Validation.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "UserCertificateAutoEnrollment.BL/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "PInvoke.NCrypt": "0.7.124"
+          "PInvoke.NCrypt": "0.7.124",
+          "UserCetrificateAutoEnrollment.BL.Windows": "1.0.0"
         },
         "compile": {
           "bin/placeholder/UserCertificateAutoEnrollment.BL.dll": {}
@@ -2337,37 +2325,22 @@
           "Microsoft.Extensions.Configuration": "6.0.1",
           "Microsoft.Extensions.Configuration.Abstractions": "6.0.0",
           "Microsoft.Extensions.Configuration.Binder": "6.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0",
-          "UserCertificateAutoEnrollment.BL": "1.0.0",
-          "UserCertificateAutoEnrollment.BL.macOS": "1.0.0",
-          "UserCetrificateAutoEnrollment.BL.Windows": "1.0.0"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
         },
         "compile": {
           "bin/placeholder/UserCertificateAutoEnrollment.BL.Common.dll": {}
         },
         "runtime": {
           "bin/placeholder/UserCertificateAutoEnrollment.BL.Common.dll": {}
-        }
-      },
-      "UserCertificateAutoEnrollment.BL.macOS/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "dependencies": {
-          "PCLCrypto": "2.0.147",
-          "UserCertificateAutoEnrollment.BL": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/UserCertificateAutoEnrollment.BL.macOS.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UserCertificateAutoEnrollment.BL.macOS.dll": {}
         }
       },
       "UserCetrificateAutoEnrollment.BL.Windows/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "UserCertificateAutoEnrollment.BL": "1.0.0"
+          "NLog": "5.0.2",
+          "NLog.WindowsEventLog": "5.0.2",
+          "UserCertificateAutoEnrollment.BL.Common": "1.0.0"
         },
         "compile": {
           "bin/placeholder/UserCetrificateAutoEnrollment.BL.Windows.dll": {}
@@ -3201,29 +3174,18 @@
         "nlog.nuspec"
       ]
     },
-    "PCLCrypto/2.0.147": {
-      "sha512": "OFNDBjhP+qPukqB8PiGbWDo70gHsEzSKupL47JisjYFQaGwlPPCnN8ah59QCzIvsg9IUr2AecGKXF3ONpyFL9g==",
+    "NLog.WindowsEventLog/5.0.2": {
+      "sha512": "CG187INGHk+ugrDTO3M53piNuxqESS10F6e/+8jPkNy4AeAjDYJSlD3KnxbR2srDYzuWOlSZP0Cua57Lwx2uYw==",
       "type": "package",
-      "path": "pclcrypto/2.0.147",
+      "path": "nlog.windowseventlog/5.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/MonoAndroid23/PCLCrypto.dll",
-        "lib/MonoAndroid23/PCLCrypto.xml",
-        "lib/MonoTouch10/PCLCrypto.dll",
-        "lib/MonoTouch10/PCLCrypto.xml",
-        "lib/net45/PCLCrypto.dll",
-        "lib/net45/PCLCrypto.xml",
-        "lib/portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/PCLCrypto.dll",
-        "lib/portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/PCLCrypto.xml",
-        "lib/portable-win81+wpa81/PCLCrypto.dll",
-        "lib/portable-win81+wpa81/PCLCrypto.xml",
-        "lib/wp80/PCLCrypto.dll",
-        "lib/wp80/PCLCrypto.xml",
-        "lib/xamarinios10/PCLCrypto.dll",
-        "lib/xamarinios10/PCLCrypto.xml",
-        "pclcrypto.2.0.147.nupkg.sha512",
-        "pclcrypto.nuspec"
+        "N.png",
+        "lib/netstandard2.0/NLog.WindowsEventLog.dll",
+        "lib/netstandard2.0/NLog.WindowsEventLog.xml",
+        "nlog.windowseventlog.5.0.2.nupkg.sha512",
+        "nlog.windowseventlog.nuspec"
       ]
     },
     "PInvoke.BCrypt/0.7.124": {
@@ -7146,31 +7108,6 @@
         "system.xml.xmldocument.nuspec"
       ]
     },
-    "Validation/2.2.8": {
-      "sha512": "DMNc7JhPlgRwnR+NNb+ldoluObL+RBw96aMoiZae/Looa4vgaAnIysmle/bV2OKqDNW9oUBDckPyfa2+sX6JdA==",
-      "type": "package",
-      "path": "validation/2.2.8",
-      "hasTools": true,
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "lib/dotnet/Validation.dll",
-        "lib/dotnet/Validation.xml",
-        "lib/portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/Validation.dll",
-        "lib/portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/Validation.xml",
-        "lib/portable-net45+dnxcore50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/Validation.dll",
-        "lib/portable-net45+dnxcore50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/Validation.xml",
-        "tools/2013/RequiresNotNull.snippet",
-        "tools/2013/RequiresNotNullOrEmpty.snippet",
-        "tools/2015/RequiresNotNull.snippet",
-        "tools/2015/RequiresNotNullOrEmpty.snippet",
-        "tools/install_snippets.cmd",
-        "tools/uninstall_snippets.cmd",
-        "validation.2.2.8.nupkg.sha512",
-        "validation.nuspec"
-      ]
-    },
     "UserCertificateAutoEnrollment.BL/1.0.0": {
       "type": "project",
       "path": "../UserCertificateAutoEnrollment.BL/UserCertificateAutoEnrollment.BL.csproj",
@@ -7180,11 +7117,6 @@
       "type": "project",
       "path": "../UserCertificateAutoEnrollment.BL.Common/UserCertificateAutoEnrollment.BL.Common.csproj",
       "msbuildProject": "../UserCertificateAutoEnrollment.BL.Common/UserCertificateAutoEnrollment.BL.Common.csproj"
-    },
-    "UserCertificateAutoEnrollment.BL.macOS/1.0.0": {
-      "type": "project",
-      "path": "../UserCertificateAutoEnrollment.BL.macOS/UserCertificateAutoEnrollment.BL.macOS.csproj",
-      "msbuildProject": "../UserCertificateAutoEnrollment.BL.macOS/UserCertificateAutoEnrollment.BL.macOS.csproj"
     },
     "UserCetrificateAutoEnrollment.BL.Windows/1.0.0": {
       "type": "project",
@@ -7312,21 +7244,10 @@
       ]
     },
     {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'PCLCrypto 2.0.147' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
-      "libraryId": "PCLCrypto",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Validation 2.2.8' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
-      "libraryId": "Validation",
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Detected package downgrade: NLog from 5.0.2 to 5.0.1. Reference the package directly from the project to select a different version. \r\n UserCertificateAutoEnrollment-KeyStoreAPI -> UserCertificateAutoEnrollment.BL -> UserCetrificateAutoEnrollment.BL.Windows -> NLog (>= 5.0.2) \r\n UserCertificateAutoEnrollment-KeyStoreAPI -> NLog (>= 5.0.1)",
+      "libraryId": "NLog",
       "targetGraphs": [
         "net6.0"
       ]

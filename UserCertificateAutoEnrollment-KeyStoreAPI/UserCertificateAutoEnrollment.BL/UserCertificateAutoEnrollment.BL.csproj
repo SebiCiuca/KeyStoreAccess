@@ -10,4 +10,8 @@
     <PackageReference Include="PInvoke.NCrypt" Version="0.7.124" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UserCetrificateAutoEnrollment.BL.Windows\UserCetrificateAutoEnrollment.BL.Windows.csproj" />
+  </ItemGroup>
+
 </Project>

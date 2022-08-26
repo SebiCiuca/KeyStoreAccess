@@ -1,4 +1,5 @@
-﻿using UserCertificateAutoEnrollment.BL.KeyStore;
+﻿using UserCertificateAutoEnrollment.BL.Common.Contracts;
+using UserCertificateAutoEnrollment.BL.KeyStore;
 using UserCertificateAutoEnrollment.BL.Session;
 
 namespace UserCertificateAutoEnrollment_KeyStoreAPI

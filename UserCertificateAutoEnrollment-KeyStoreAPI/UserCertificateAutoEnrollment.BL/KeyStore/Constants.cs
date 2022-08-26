@@ -1,4 +1,6 @@
-﻿namespace UserCertificateAutoEnrollment.BL.KeyStore
+﻿using UserCetrificateAutoEnrollment.BL.Windows;
+
+namespace UserCertificateAutoEnrollment.BL.KeyStore
 {
     public static class Constants
     {
@@ -18,6 +20,17 @@
         public const string CertificateNameStart = "CN=";
 
 
-        public const string ALLIANZ_CERTIFICATE_SUBJECT = "CN=AZ Tech PKI Trust Signing, OU=TrustManager, O=Allianz, C=DE";
+        public static Dictionary<SSTTypesEnum, string> SSTTypes = new Dictionary<SSTTypesEnum, string>
+        {
+            {SSTTypesEnum.AUTHROOTS          , "https://rootca.allianz.com/trust/authroots.sst"},
+            {SSTTypesEnum.DISALLOWEDCERT     , "https://rootca.allianz.com/trust/disallowedcert.sst"},
+            {SSTTypesEnum.DELDISALLOWED      , "https://rootca.allianz.com/trust/deldisallowed.sst"},
+            {SSTTypesEnum.INTERCEPTION       , "https://rootca.allianz.com/trust/interception.sst"},
+            {SSTTypesEnum.ROOTS              , "https://rootca.allianz.com/trust/roots.sst"},
+            {SSTTypesEnum.DELROOTS           , "https://rootca.allianz.com/trust/delroots.sst"},
+            {SSTTypesEnum.UPDROOTS           , "https://rootca.allianz.com/trust/updroots.sst"},
+            {SSTTypesEnum.TRUSTEDPUBLISHER   , "https://rootca.allianz.com/trust/trustedpublisher.sst"},
+            {SSTTypesEnum.UNTRUSTEDPUBLISHER , "https://rootca.allianz.com/trust/untrustedpublisher.sst"}
+        };
     }
 }

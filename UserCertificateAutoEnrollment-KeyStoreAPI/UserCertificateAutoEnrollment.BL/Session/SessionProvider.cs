@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
+using UserCertificateAutoEnrollment.BL.Common.Contracts;
 using UserCertificateAutoEnrollment.BL.Helpers;
+using UserCertificateAutoEnrollment.BL.KeyStore;
 using UserCertificateAutoEnrollment.BL.Security;
 
 namespace UserCertificateAutoEnrollment.BL.Session
@@ -8,12 +11,17 @@ namespace UserCertificateAutoEnrollment.BL.Session
     {
         private readonly ICryptoService m_CryptoService;
         private Dictionary<byte[], ISession> m_Sessions;
+        private readonly IHttpClient m_HttpClient;
 
-        public SessionProvider(ICryptoService cryptoService)
+        public SessionProvider(ICryptoService cryptoService, IHttpClient httpClient, IKeyStoreFactory keyStoreFactory)
         {
             m_CryptoService = cryptoService;
             m_Sessions = new(new ByteArrayComparer());
+            m_HttpClient = httpClient;
         }
+
+        public ISession CurrentSession { get; private set; }
+        public byte[] CodeSignCertificate { get; private set; }
 
         public async Task<ISession> CreateSession(string nonceValue)
         {
@@ -48,9 +56,11 @@ namespace UserCertificateAutoEnrollment.BL.Session
                 throw new Exception("Session not found");
             }
 
+            CurrentSession = session;
+
             return session;
-        } 
-        
+        }
+
         public ISession GetSession(string sessionKey)
         {
             if (null == sessionKey)
@@ -66,6 +76,8 @@ namespace UserCertificateAutoEnrollment.BL.Session
                 return null;
             }
 
+            CurrentSession = session;
+
             return session;
         }
 
@@ -76,7 +88,17 @@ namespace UserCertificateAutoEnrollment.BL.Session
                 throw new ArgumentException($"'{nameof(sessionKey)}' cannot be null or whitespace.", nameof(sessionKey));
             }
 
-            m_Sessions.Remove(sessionKey);
+            var sessionFound = m_Sessions.TryGetValue(sessionKey, out var session);
+
+            if (sessionFound)
+            {
+                if (session.Equals(CurrentSession))
+                {
+                    CurrentSession = null;
+                }
+
+                m_Sessions.Remove(sessionKey);
+            }
         }
 
         public void ValidateSession(byte[] sessionKey)
@@ -87,7 +109,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
             }
 
             var sessionFound = m_Sessions.TryGetValue(sessionKey, out var session);
-                       
+
             if (!sessionFound)
             {
                 return;

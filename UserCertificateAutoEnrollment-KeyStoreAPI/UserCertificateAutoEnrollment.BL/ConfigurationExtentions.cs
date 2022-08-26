@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.KeyStore;
 using UserCetrificateAutoEnrollment.BL.Windows;
 
-namespace UserCertificateAutoEnrollment.BL.Common
+namespace UserCertificateAutoEnrollment.BL
 {
     public static class ConfigurationExtentions
     {
         public static void ConfigureKeyStoreServices(this IServiceCollection services)
         {
-            services.AddTransient<IKeyStoreResolver, WindowsKeyStoreResolver>();
             services.AddTransient<IKeyStoreFactory, KeyStoreFactory>();
         }
 
         public static void ConfigureAppSettings(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            BL.Http.HttpClientUrls urls = new();
+            Http.HttpClientUrls urls = new();
 
             configuration.GetSection("HttpClientUrls").Bind(urls);
 

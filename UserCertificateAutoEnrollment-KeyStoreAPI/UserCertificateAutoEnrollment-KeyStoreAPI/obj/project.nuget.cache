@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "LYVygdCURw1TWToN1fK66BLP96dSY8hJS1QJ/6SwTiylLqPO5BJATQd1M3IdtrS7FSGpr4l+gAfV5INYUx8HbQ==",
-  "success": true,
+  "dgSpecHash": "HfTgdo9LFfe/c51FOBCmRybTMZp7lnmewE2trscf7ZHI+lcUv2gYBEOHoIrmniUuE9olwmejSlvAqRVsksIjAw==",
+  "success": false,
   "projectFilePath": "C:\\Repos\\Metafinanz\\UserCertificateAutoEnrollment\\UserCertificateAutoEnrollment-KeyStoreAPI\\UserCertificateAutoEnrollment-KeyStoreAPI\\UserCertificateAutoEnrollment-KeyStoreAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\microsoft.aspnet.webapi.client\\5.2.9\\microsoft.aspnet.webapi.client.5.2.9.nupkg.sha512",
@@ -40,7 +40,7 @@
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\newtonsoft.json\\10.0.1\\newtonsoft.json.10.0.1.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\newtonsoft.json.bson\\1.0.1\\newtonsoft.json.bson.1.0.1.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\nlog\\5.0.1\\nlog.5.0.1.nupkg.sha512",
-    "C:\\Users\\CSEBASTI\\.nuget\\packages\\pclcrypto\\2.0.147\\pclcrypto.2.0.147.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\nlog.windowseventlog\\5.0.2\\nlog.windowseventlog.5.0.2.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.bcrypt\\0.7.124\\pinvoke.bcrypt.0.7.124.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.kernel32\\0.7.124\\pinvoke.kernel32.0.7.124.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.ncrypt\\0.7.124\\pinvoke.ncrypt.0.7.124.nupkg.sha512",
@@ -128,8 +128,7 @@
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.threading.timer\\4.3.0\\system.threading.timer.4.3.0.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\CSEBASTI\\.nuget\\packages\\validation\\2.2.8\\validation.2.2.8.nupkg.sha512"
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512"
   ],
   "logs": [
     {
@@ -153,21 +152,10 @@
       ]
     },
     {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'PCLCrypto 2.0.147' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
-      "libraryId": "PCLCrypto",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Validation 2.2.8' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
-      "libraryId": "Validation",
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Detected package downgrade: NLog from 5.0.2 to 5.0.1. Reference the package directly from the project to select a different version. \r\n UserCertificateAutoEnrollment-KeyStoreAPI -> UserCertificateAutoEnrollment.BL -> UserCetrificateAutoEnrollment.BL.Windows -> NLog (>= 5.0.2) \r\n UserCertificateAutoEnrollment-KeyStoreAPI -> NLog (>= 5.0.1)",
+      "libraryId": "NLog",
       "targetGraphs": [
         "net6.0"
       ]

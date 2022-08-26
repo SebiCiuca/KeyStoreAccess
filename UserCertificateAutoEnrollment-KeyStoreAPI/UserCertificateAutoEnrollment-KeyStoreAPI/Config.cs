@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UserCertificateAutoEnrollment.BL.Common;
+using UserCertificateAutoEnrollment.BL;
 
 namespace UserCertificateAutoEnrollment_KeyStoreAPI
 {

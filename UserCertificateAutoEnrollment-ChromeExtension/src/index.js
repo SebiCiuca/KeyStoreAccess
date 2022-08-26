@@ -1,9 +1,12 @@
 import axios from "axios";
 
 const baseUrl = "https://localhost:7095";
+const auth = "Auth";
+const keyStore = "KeyStore"
 
-const generateSessionEndpoint = "Auth/CreateSession?nonceValue=";
-const validateSessionEndpoint = "Auth/ValidateSession";
+const generateSessionEndpoint = auth + "/CreateSession?nonceValue=";
+const validateSessionEndpoint = auth + "/ValidateSession";
+const getCertifcatesEndpoint = keyStore + "/GetCertificates";
 const getWeatherEndpoint = "WeatherForecast"
 
 const sessionKeyLocalStorage = "SessionKey";
@@ -34,7 +37,7 @@ const handleSubmit = async e => {
     logs.value += "Session key found, retriving weather\n";
     logs.value += "Getting weather\n";
 
-    await getCurrentWeather();
+    await getAllCertificates();
 };
 
 form.addEventListener("submit", e => handleSubmit(e));
@@ -55,6 +58,11 @@ const getCurrentWeather = async () => {
 const validateSession = async () => {   
     let sessionKey = await getLocalStorageValue(sessionKeyLocalStorage);
     await validateSessionKeyAsync(sessionKey);
+}
+
+const getAllCertificates = async () => {
+    let sessionKey = await getLocalStorageValue(sessionKeyLocalStorage);
+    await getCertificatesAsync(sessionKey);
 }
 
 
@@ -152,6 +160,28 @@ const generateSessionAsync = async nonceValue => {
         
         error.textContent = "Could not create session with API, can't load ";
     }
+}
+
+const getCertificatesAsync = async sessionKey => {
+    
+    const getCertificatesUrl = `${baseUrl}/${getCertifcatesEndpoint}`
+    const headers = {
+        'Content-Type': 'application/json',
+        'SessionKey': sessionKey
+    }
+    var response = await axios.get(getCertificatesUrl, { headers })
+        .then(function (response) {
+            console.log(response);          
+        }).catch(function (err) {
+            error.style.display = "block";
+
+            if (err.message === "Network Error") {             
+                error.textContent = "Error: Network error!";
+            } else {
+                handleSessionError(err);
+                error.textContent = "Error ar retriving weather, please retry!";
+            }
+        });
 }
 
 //#endregion Calls to API
