@@ -410,3 +410,4 @@ obj/
 [Tt]est[Rr]esult*
 #Nuget packages folder
 packages/
+/UserCertificateAutoEnrollment-KeyStoreAPI/UCAE-KeyStoreSelfHostedApi/obj/
