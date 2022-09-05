@@ -3,6 +3,7 @@ using NLog;
 using NLog.Web;
 using UCAE_KeyStoreSelfHostedApi;
 using UserCertificateAutoEnrollment.BL;
+using UserCertificateAutoEnrollment.BL.Common.Contracts;
 using UserCertificateAutoEnrollment.BL.KeyStore;
 using UserCertificateAutoEnrollment.BL.Security;
 using UserCertificateAutoEnrollment.BL.Session;
@@ -29,6 +30,7 @@ try
 
     builder.Services.AddSingleton<ISessionProvider, SessionProvider>();
     builder.Services.AddTransient<ICryptoService, CryptoService>();
+    builder.Services.AddTransient<IHttpClient, UserCertificateAutoEnrollment.BL.Http.HttpClient>();
     builder.Services.ConfigureKeyStoreServices();
 
     builder.Host.UseWindowsService();
@@ -42,8 +44,8 @@ try
         appBuilder =>
         {
             appBuilder.UseMyCustomMiddleware();
-        });   
-    
+        });
+
     app.UseWhen(c => c.Request.Path.StartsWithSegments("/KeyStore", StringComparison.OrdinalIgnoreCase),
         appBuilder =>
         {

@@ -8,43 +8,48 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
     [Route("[controller]")]
     public class KeyStoreController : Controller
     {
-        private readonly IKeyStoreFactory _keyStoreFactory;
-        private readonly ISessionProvider _sessionProvider;
-        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly IKeyStoreFactory m_KeyStoreFactory;
+        private readonly ISessionProvider m_SessionProvider;
+        private readonly NLog.Logger m_Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public KeyStoreController(IKeyStoreFactory keyStoreFactory, ISessionProvider sessionProvider)
         {
-            _keyStoreFactory = keyStoreFactory;
-            _sessionProvider = sessionProvider;
+            m_KeyStoreFactory = keyStoreFactory;
+            m_SessionProvider = sessionProvider;
         }
 
         [HttpGet]
         [Route("GetCertificates")]
-        public async Task<IActionResult> GetCertificatesAsync()
+        public async Task<IActionResult> GetCertificatesAsync(string ssTType)
         {
-            //_logger.Trace($"Creating new session with provided nonceValue: {nonceValue}");
-            _logger.Info($"List of certificates was requested");
-
-            ////validate nonceValue <-- maybe limit chars to a specific amount
-            //if (string.IsNullOrEmpty(nonceValue))
-            //{
-            //    _logger.Warn("Could not create session nonceValue format is incorect");
-            //    _logger.Trace($"Could not create session nonceValue format is incorect. Value provided {nonceValue}");
-
-            //    throw new ArgumentException($"'{nameof(nonceValue)}' format is not correct", nameof(nonceValue));
-
-            //}
+            m_Logger.Info($"List of certificates was requested");            
             var os = "windows";
+            m_Logger.Info($"Retriving list of certificates from {os} OS");
+            var keyStoreManager = m_KeyStoreFactory.GetKeyStoreManager(os);
+            m_Logger.Trace($"Created key store manager of type {keyStoreManager.KeyStoreResolver.GetType()}");
 
-            _logger.Info($"Retriving list of certificates from {os} OS");
-            var keyStore = _keyStoreFactory.GetKeyStoreResolver(os, _sessionProvider.CurrentSession);
-            _logger.Trace($"Created key store resolver of type {keyStore.GetType()}");
-
-            //var certificates = keyStore.ListKeys();
-            //_logger.Info("Certificates retrieved successfully");
-            //_logger.Trace($"Number of certificates retrieved from {os} key store {certificates.Count()}");
+            var certificates = await keyStoreManager.GetCertificatesAsync(ssTType);
+            m_Logger.Info("Certificates retrieved successfully");
+            m_Logger.Trace($"Number of certificates retrieved from {os} key store {certificates.Count()}");
 
             //return new List<object>();
+
+            return Ok(certificates);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SyncCertificate(string ssTType)
+        {
+            m_Logger.Info("Syncing certificates with Allianz servers");
+            m_Logger.Trace($"Sync certificates for {ssTType} was called...");
+
+            var os = "windows";
+
+            m_Logger.Info($"Sync started for {os} OS");
+            var keyStore = m_KeyStoreFactory.GetKeyStoreManager(os);
+            m_Logger.Trace($"Created key store manager of type {keyStore.GetType()}");
+
+            await keyStore.SyncCertificatesAsync(ssTType);
 
             return Ok();
         }

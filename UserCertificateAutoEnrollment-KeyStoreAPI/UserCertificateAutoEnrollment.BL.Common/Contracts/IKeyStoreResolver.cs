@@ -8,7 +8,7 @@ namespace UserCertificateAutoEnrollment.BL.Common.Contracts
         /// List certificates saved on client machine
         /// </summary>
         /// <returns></returns>
-        //IEnumerable<CertificateModel> ListKeys();
+        Task<IEnumerable<CertificateModel>> ListCertificatesAsync(string sSTType);
 
         /// <summary>
         /// Verify certificate and it signature

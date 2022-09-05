@@ -8,9 +8,9 @@ namespace UserCertificateAutoEnrollment.BL.Http
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private const string SIG_EXTENTION = ".sig";
 
-        public HttpClient(HttpClientUrls urls)
+        public HttpClient(/*HttpClientUrls urls*/)
         {
-            m_Urls = urls;
+            //m_Urls = urls;
         }
 
         public async Task<byte[]> GetCertificate(string url)

@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.Common.Contracts;
 
 namespace UserCetrificateAutoEnrollment.BL.Windows
@@ -17,106 +18,6 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
             m_Session = session;
             m_HttpClient = httpClient;
         }
-
-        public bool VerifySignature(byte[] certificateBytes, byte[] certifcatesBytesSignature)
-        {
-            X509Certificate2? codeSignCert = null;
-            try
-            {
-                codeSignCert = new X509Certificate2(m_Session.TrustCert);
-            }
-            catch (Exception ex)
-            {
-                m_Logger.Error(ex, $"Could not initialize Code Sign Certificate, abording...");
-
-                throw;
-            }
-
-            if (codeSignCert == null)
-            {
-                m_Logger.Error($"Initializing Code Sign Certificate passed, but for some reason certificate is null...");
-
-                return false;
-            }
-
-            RSAParameters rsaParams = codeSignCert.GetRSAPublicKey().ExportParameters(false);
-            var rsaKey = RSA.Create(rsaParams);
-            byte[] sha512HashedData;
-            m_Logger.Trace("Signature data verification started.");
-            bool dataOK = rsaKey.VerifyData(certificateBytes, certifcatesBytesSignature,
-                HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            if (dataOK)
-            {
-                m_Logger.Trace("Signature data verification successful.");
-                using SHA512 sha256Hash = SHA512.Create();
-                sha512HashedData = sha256Hash.ComputeHash(certificateBytes);
-                m_Logger.Trace("Signature hash verification started.");
-                bool hashOK = rsaKey.VerifyHash(sha512HashedData, certifcatesBytesSignature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                if (hashOK)
-                {
-                    m_Logger.Trace("Signature hash verification successful.");
-
-                    return true;
-                }
-
-                m_Logger.Trace("Signature hash verification failed.");
-
-                return false;
-            }
-
-            m_Logger.Trace("Signature data verification failed.");
-
-            return false;
-        }
-        //public IEnumerable<CertificateModel> ListKeys()
-        //{
-        //    //open local store 
-        //    using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-
-        //    //for listing certificates we only need readonly access
-        //    store.Open(OpenFlags.ReadOnly);
-
-        //    //load all certificates
-        //    var certificates = store.Certificates.OfType<X509Certificate2>();
-        //    List<CertificateModel> validCertificates = new();
-
-        //    foreach (var cert in certificates)
-        //    {
-
-        //        if (!cert.HasPrivateKey)
-        //        {
-        //            continue;
-        //        }
-
-        //        var privateKey = cert.GetRSAPrivateKey();
-
-        //        if (privateKey == null)
-        //        {
-        //            throw new Exception("Private key should be present, but could not be retrieved");
-        //        }
-
-        //        RSACng rsa = (RSACng)privateKey;
-
-        //        //we search only for RSA Keys
-        //        if (rsa == null)
-        //        {
-        //            throw new NotSupportedException("Private key cannot be used with RSA algorithm");
-        //        }
-
-        //        validCertificates.Add(new CertificateModel
-        //        {
-        //            Issuer = cert.Issuer,
-        //            NotAfter = cert.NotAfter,
-        //            NotBefore = cert.NotBefore,
-        //            SerialNumber = cert.SerialNumber,
-        //            SubjectName = cert.Subject,
-        //            Provider = rsa.Key?.Provider?.Provider,
-        //            UniqueIdentifier = rsa.Key.UniqueName
-        //        });
-        //    }
-
-        //    return validCertificates;
-        //}
 
         //public void DeleteCertficate(string certificateName)
         //{
@@ -355,6 +256,139 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
             return false;
         }
 
+        private StoreName GetStoreName(bool isRoot, SSTTypesEnum sSTType)
+        {
+            switch (sSTType)
+            {
+                case SSTTypesEnum.AUTHROOTS:
+                    return StoreName.AuthRoot;
+                //case SSTTypesEnum.INTERCEPTION:
+                //    return StoreName.My;
+                case SSTTypesEnum.UPDROOTS:
+                    return isRoot ? StoreName.AuthRoot : StoreName.CertificateAuthority;
+                case SSTTypesEnum.ROOTS:
+                    return isRoot ? StoreName.Root : StoreName.CertificateAuthority;
+                case SSTTypesEnum.DISALLOWEDCERT:
+                    return StoreName.Disallowed;
+                case SSTTypesEnum.DELROOTS:
+                    return isRoot ? StoreName.Root : StoreName.CertificateAuthority;
+                case SSTTypesEnum.TRUSTEDPUBLISHER:
+                    return StoreName.TrustedPublisher;
+                // For removing Publishers
+                case SSTTypesEnum.UNTRUSTEDPUBLISHER:
+                    return StoreName.TrustedPublisher;
+                case SSTTypesEnum.DELDISALLOWED:
+                    // Remove from Disallowed
+                    return StoreName.Disallowed;
+                default:
+                    return StoreName.My;
+            }
+        }
+        public bool VerifySignature(byte[] certificateBytes, byte[] certifcatesBytesSignature)
+        {
+            X509Certificate2? codeSignCert = null;
+            try
+            {
+                codeSignCert = new X509Certificate2(m_Session.TrustCert);
+            }
+            catch (Exception ex)
+            {
+                m_Logger.Error(ex, $"Could not initialize Code Sign Certificate, abording...");
+
+                throw;
+            }
+
+            if (codeSignCert == null)
+            {
+                m_Logger.Error($"Initializing Code Sign Certificate passed, but for some reason certificate is null...");
+
+                return false;
+            }
+
+            RSAParameters rsaParams = codeSignCert.GetRSAPublicKey().ExportParameters(false);
+            var rsaKey = RSA.Create(rsaParams);
+            byte[] sha512HashedData;
+            m_Logger.Trace("Signature data verification started.");
+            bool dataOK = rsaKey.VerifyData(certificateBytes, certifcatesBytesSignature,
+                HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
+
+
+            if (dataOK)
+            {
+                m_Logger.Trace("Signature data verification successful.");
+                using SHA512 sha256Hash = SHA512.Create();
+                sha512HashedData = sha256Hash.ComputeHash(certificateBytes);
+                m_Logger.Trace("Signature hash verification started.");
+                bool hashOK = rsaKey.VerifyHash(sha512HashedData, certifcatesBytesSignature, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
+                if (hashOK)
+                {
+                    m_Logger.Trace("Signature hash verification successful.");
+
+                    return true;
+                }
+
+                m_Logger.Trace("Signature hash verification failed.");
+
+                return false;
+            }
+
+            m_Logger.Trace("Signature data verification failed.");
+
+            return false;
+        }
+
+        public async Task<IEnumerable<CertificateModel>> ListCertificatesAsync(string sSTType)
+        {
+            SSTTypesEnum inputsSTType = (SSTTypesEnum)Enum.Parse(typeof(SSTTypesEnum), sSTType);
+            StoreName storeName = GetStoreName(false, inputsSTType);
+            //open local store 
+            using var store = new X509Store(storeName, StoreLocation.LocalMachine);
+
+            //for listing certificates we only need readonly access
+            store.Open(OpenFlags.ReadOnly);
+
+            //load all certificates
+            var certificates = store.Certificates.OfType<X509Certificate2>();
+            List<CertificateModel> validCertificates = new();
+
+            foreach (var cert in certificates)
+            {
+
+                if (!cert.HasPrivateKey)
+                {
+                    continue;
+                }
+
+                var privateKey = cert.GetRSAPrivateKey();
+
+                if (privateKey == null)
+                {
+                    throw new Exception("Private key should be present, but could not be retrieved");
+                }
+
+                RSACng rsa = (RSACng)privateKey;
+
+                //we search only for RSA Keys
+                if (rsa == null)
+                {
+                    throw new NotSupportedException("Private key cannot be used with RSA algorithm");
+                }
+
+                validCertificates.Add(new CertificateModel
+                {
+                    Issuer = cert.Issuer,
+                    NotAfter = cert.NotAfter,
+                    NotBefore = cert.NotBefore,
+                    SerialNumber = cert.SerialNumber,
+                    SubjectName = cert.Subject,
+                    Provider = rsa.Key?.Provider?.Provider,
+                    UniqueIdentifier = rsa.Key.UniqueName
+                });
+            }
+
+            return await Task.FromResult(validCertificates);
+        }
+
         public void AddCertificate(StoreName storeName, X509Certificate2 certificate, StoreLocation storeLocation = StoreLocation.LocalMachine)
         {
             using X509Store CAStore = new X509Store(storeName, storeLocation);
@@ -429,52 +463,42 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
             foreach (X509Certificate2 trustedCertificate in trustedCertificatesCollection)
             {
                 bool root = IsRoot(trustedCertificate);
-                StoreName storeName;
+                StoreName storeName = GetStoreName(root, inputsSTType);
 
                 switch (inputsSTType)
                 {
                     case SSTTypesEnum.UPDROOTS:
-                        storeName = root ? StoreName.AuthRoot : StoreName.CertificateAuthority;
                         // Add to Trusted
                         // Local Machine & CurrentUser
                         AddCertificate(storeName, trustedCertificate);
-
                         // Remove from Untrusted to ensure conflict (LM and CU)
                         RemoveCertificate(StoreName.Disallowed, trustedCertificate);
-
                         break;
-
                     case SSTTypesEnum.ROOTS:
-                        storeName = root ? StoreName.Root : StoreName.CertificateAuthority;
                         AddCertificate(storeName, trustedCertificate);
                         break;
                     case SSTTypesEnum.DISALLOWEDCERT:
                         // Add to Disallowed
-                        storeName = StoreName.Disallowed;
                         AddCertificate(storeName, trustedCertificate);
                         break;
                     case SSTTypesEnum.DELROOTS:
-                        storeName = root ? StoreName.Root : StoreName.CertificateAuthority;
                         RemoveCertificate(storeName, trustedCertificate);
                         break;
                     case SSTTypesEnum.TRUSTEDPUBLISHER:
-                        storeName = StoreName.TrustedPublisher;
                         AddCertificate(storeName, trustedCertificate);
                         break;
                     // For removing Publishers
                     case SSTTypesEnum.UNTRUSTEDPUBLISHER:
-                        storeName = StoreName.TrustedPublisher;
                         RemoveCertificate(storeName, trustedCertificate);
                         break;
                     case SSTTypesEnum.DELDISALLOWED:
                         // Remove from Disallowed
-                        storeName = StoreName.Disallowed;
                         RemoveCertificate(storeName, trustedCertificate);
                         break;
                 }
             }
 
-            return true;
+            return Task.FromResult(true);
         }
         //private X509Certificate2 BuildSelfSignedServerCertificate(RSA key, string certificateName, string password,
         //    List<OidsModel> keyUsageList, DateTime notBefore, DateTime notAfter)

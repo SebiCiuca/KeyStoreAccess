@@ -11,13 +11,11 @@ namespace UserCertificateAutoEnrollment.BL.Session
     {
         private readonly ICryptoService m_CryptoService;
         private Dictionary<byte[], ISession> m_Sessions;
-        private readonly IHttpClient m_HttpClient;
 
-        public SessionProvider(ICryptoService cryptoService, IHttpClient httpClient, IKeyStoreFactory keyStoreFactory)
+        public SessionProvider(ICryptoService cryptoService)
         {
             m_CryptoService = cryptoService;
             m_Sessions = new(new ByteArrayComparer());
-            m_HttpClient = httpClient;
         }
 
         public ISession CurrentSession { get; private set; }
@@ -101,7 +99,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
             }
         }
 
-        public void ValidateSession(byte[] sessionKey)
+        public bool ValidateSession(byte[] sessionKey)
         {
             if (null == sessionKey)
             {
@@ -112,10 +110,12 @@ namespace UserCertificateAutoEnrollment.BL.Session
 
             if (!sessionFound)
             {
-                return;
+                return false;
             }
 
             session.ValidateSession();
+
+            return true;
         }
     }
 }

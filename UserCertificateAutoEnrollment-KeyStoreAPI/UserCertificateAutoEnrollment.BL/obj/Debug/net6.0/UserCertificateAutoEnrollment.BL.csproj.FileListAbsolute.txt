@@ -10,3 +10,8 @@ C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-
 C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\obj\Debug\net6.0\refint\UserCertificateAutoEnrollment.BL.dll
 C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\obj\Debug\net6.0\UserCertificateAutoEnrollment.BL.pdb
 C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\obj\Debug\net6.0\ref\UserCertificateAutoEnrollment.BL.dll
+C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\bin\Debug\net6.0\UserCertificateAutoEnrollment.BL.Common.dll
+C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\bin\Debug\net6.0\UserCetrificateAutoEnrollment.BL.Windows.dll
+C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\bin\Debug\net6.0\UserCetrificateAutoEnrollment.BL.Windows.pdb
+C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\bin\Debug\net6.0\UserCertificateAutoEnrollment.BL.Common.pdb
+C:\Repos\Metafinanz\UserCertificateAutoEnrollment\UserCertificateAutoEnrollment-KeyStoreAPI\UserCertificateAutoEnrollment.BL\obj\Debug\net6.0\UserCertificateAutoEnrollment.BL.csproj.CopyComplete

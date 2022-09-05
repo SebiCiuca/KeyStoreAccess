@@ -1,4 +1,4 @@
-﻿namespace UserCertificateAutoEnrollment.BL
+﻿namespace UserCertificateAutoEnrollment.BL.Common
 {
     public class CertificateModel
     {

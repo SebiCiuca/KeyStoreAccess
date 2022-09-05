@@ -61,10 +61,10 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
             }
 
 
-            m_SessionProvider.ValidateSession(sessionKey);
+            var isValid = m_SessionProvider.ValidateSession(sessionKey);
             _logger.Info($"Validate session completed");
 
-            return Ok();
+            return Ok(isValid);
         }
     }
 }

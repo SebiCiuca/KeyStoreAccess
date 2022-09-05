@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "HfTgdo9LFfe/c51FOBCmRybTMZp7lnmewE2trscf7ZHI+lcUv2gYBEOHoIrmniUuE9olwmejSlvAqRVsksIjAw==",
-  "success": false,
+  "dgSpecHash": "RgRCdt/HqbTw0UAHkgJCmN8+eRpLX4vU0eESul9UkeED0n33rqy+EuO3s1r8/UUDa8OaGOK4NX0Ug4Ux5Qt7rA==",
+  "success": true,
   "projectFilePath": "C:\\Repos\\Metafinanz\\UserCertificateAutoEnrollment\\UserCertificateAutoEnrollment-KeyStoreAPI\\UserCertificateAutoEnrollment-KeyStoreAPI\\UserCertificateAutoEnrollment-KeyStoreAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\microsoft.aspnet.webapi.client\\5.2.9\\microsoft.aspnet.webapi.client.5.2.9.nupkg.sha512",
@@ -39,7 +39,7 @@
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\newtonsoft.json\\10.0.1\\newtonsoft.json.10.0.1.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\newtonsoft.json.bson\\1.0.1\\newtonsoft.json.bson.1.0.1.nupkg.sha512",
-    "C:\\Users\\CSEBASTI\\.nuget\\packages\\nlog\\5.0.1\\nlog.5.0.1.nupkg.sha512",
+    "C:\\Users\\CSEBASTI\\.nuget\\packages\\nlog\\5.0.2\\nlog.5.0.2.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\nlog.windowseventlog\\5.0.2\\nlog.windowseventlog.5.0.2.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.bcrypt\\0.7.124\\pinvoke.bcrypt.0.7.124.nupkg.sha512",
     "C:\\Users\\CSEBASTI\\.nuget\\packages\\pinvoke.kernel32\\0.7.124\\pinvoke.kernel32.0.7.124.nupkg.sha512",
@@ -147,15 +147,6 @@
       "warningLevel": 1,
       "message": "Package 'Microsoft.AspNet.WebApi.SelfHost 5.2.9' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
       "libraryId": "Microsoft.AspNet.WebApi.SelfHost",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    },
-    {
-      "code": "NU1605",
-      "level": "Error",
-      "message": "Detected package downgrade: NLog from 5.0.2 to 5.0.1. Reference the package directly from the project to select a different version. \r\n UserCertificateAutoEnrollment-KeyStoreAPI -> UserCertificateAutoEnrollment.BL -> UserCetrificateAutoEnrollment.BL.Windows -> NLog (>= 5.0.2) \r\n UserCertificateAutoEnrollment-KeyStoreAPI -> NLog (>= 5.0.1)",
-      "libraryId": "NLog",
       "targetGraphs": [
         "net6.0"
       ]
