@@ -7,20 +7,20 @@ namespace UserCertificateAutoEnrollment.BL.Common
 {
     public class KeyStoreFactory : IKeyStoreFactory
     {
-        private readonly IHttpClient m_HttpClient;
-        private readonly ISessionProvider m_SessionProvider;
+        //private readonly IHttpClient m_HttpClient;
+        //private readonly ISessionProvider m_SessionProvider;
 
-        public KeyStoreFactory(IHttpClient httpClient, ISessionProvider sessionProvider)
+        public KeyStoreFactory(/*IHttpClient httpClient, ISessionProvider sessionProvider*/)
         {
-            m_HttpClient = httpClient;
-            m_SessionProvider = sessionProvider;
+            //m_HttpClient = httpClient;
+            //m_SessionProvider = sessionProvider;
         }
 
-        private KeyStoreManager GetWindowsManager(ISession session)
+        private KeyStoreManager GetWindowsManager(/*ISession session*/)
         {
-            var resolver = new WindowsKeyStoreResolver(session, m_HttpClient);
+            var resolver = new WindowsKeyStoreResolver(/*session, m_HttpClient*/);
 
-            return new KeyStoreManager(resolver, m_HttpClient, m_SessionProvider);
+            return new KeyStoreManager(resolver/*, m_HttpClient, m_SessionProvider*/);
         }
 
         public IKeyStoreManager GetKeyStoreManager(string os)
@@ -30,16 +30,16 @@ namespace UserCertificateAutoEnrollment.BL.Common
                 throw new ArgumentNullException(nameof(os));
             }
 
-            var session = m_SessionProvider.CurrentSession;
+            //var session = m_SessionProvider.CurrentSession;
 
             switch (os)
             {
                 case "windows":
-                    return GetWindowsManager(session);
+                    return GetWindowsManager();
                 //case "macos":
                 //    return new MacOSKeyStoreResolver();
                 default:
-                    return GetWindowsManager(session);
+                    return GetWindowsManager();
             }
         }
     }

@@ -1,0 +1,20 @@
+{
+    "name": "UserCertificateAutoEnrollment-Syncronizer",
+    "description": "Use this to sync Allianz Certificates with this computer",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": [
+        "*://*/*"
+    ],
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting",
+        "nativeMessaging",
+        "tabs"
+    ],
+   
+    "action": {
+        "default_popup": "index.html"        
+     }
+}

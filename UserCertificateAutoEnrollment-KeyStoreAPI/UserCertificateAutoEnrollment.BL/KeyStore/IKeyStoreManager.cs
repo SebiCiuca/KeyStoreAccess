@@ -18,11 +18,11 @@ namespace UserCertificateAutoEnrollment.BL.KeyStore
         /// <returns></returns>
         Task SyncCertificatesAsync(string sSTType);
         /// <summary>
-        /// Retrieves list of certificates based on an SST Type
+        /// Retrieve all certificates that are allianz related
         /// </summary>
         /// <param name="sSTType">Serialized Certificate Store Type</param>
         /// <returns>List of certficates found in Store</returns>
-        Task<IEnumerable<CertificateModel>> GetCertificatesAsync(string sSTType);
+        Task<IEnumerable<CertificateModel>> GetCertificatesAsync();
 
     }
 }

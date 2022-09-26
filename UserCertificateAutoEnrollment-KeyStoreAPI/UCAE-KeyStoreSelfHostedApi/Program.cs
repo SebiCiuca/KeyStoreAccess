@@ -40,17 +40,17 @@ try
 
     //app.UseMyCustomMiddleware();
 
-    app.UseWhen(c => c.Request.Path.StartsWithSegments("/WeatherForecast", StringComparison.OrdinalIgnoreCase),
-        appBuilder =>
-        {
-            appBuilder.UseMyCustomMiddleware();
-        });
+    //app.UseWhen(c => c.Request.Path.StartsWithSegments("/WeatherForecast", StringComparison.OrdinalIgnoreCase),
+    //    appBuilder =>
+    //    {
+    //        appBuilder.UseMyCustomMiddleware();
+    //    });
 
-    app.UseWhen(c => c.Request.Path.StartsWithSegments("/KeyStore", StringComparison.OrdinalIgnoreCase),
-        appBuilder =>
-        {
-            appBuilder.UseMyCustomMiddleware();
-        });
+    //app.UseWhen(c => c.Request.Path.StartsWithSegments("/KeyStore", StringComparison.OrdinalIgnoreCase),
+    //    appBuilder =>
+    //    {
+    //        appBuilder.UseMyCustomMiddleware();
+    //    });
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

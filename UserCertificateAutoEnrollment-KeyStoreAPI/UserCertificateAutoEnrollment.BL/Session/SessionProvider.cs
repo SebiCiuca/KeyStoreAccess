@@ -18,7 +18,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
             m_Sessions = new(new ByteArrayComparer());
         }
 
-        public ISession CurrentSession { get; private set; }
+        public ISession CurrentSession => new Session(new byte[10]);
         public byte[] CodeSignCertificate { get; private set; }
 
         public async Task<ISession> CreateSession(string nonceValue)
@@ -54,7 +54,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
                 throw new Exception("Session not found");
             }
 
-            CurrentSession = session;
+            //CurrentSession = session;
 
             return session;
         }
@@ -74,7 +74,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
                 return null;
             }
 
-            CurrentSession = session;
+            //CurrentSession = session;
 
             return session;
         }
@@ -92,7 +92,7 @@ namespace UserCertificateAutoEnrollment.BL.Session
             {
                 if (session.Equals(CurrentSession))
                 {
-                    CurrentSession = null;
+                    //CurrentSession = null;
                 }
 
                 m_Sessions.Remove(sessionKey);

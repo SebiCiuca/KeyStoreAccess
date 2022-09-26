@@ -28,7 +28,7 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
             var keyStoreManager = m_KeyStoreFactory.GetKeyStoreManager(os);
             m_Logger.Trace($"Created key store manager of type {keyStoreManager.KeyStoreResolver.GetType()}");
 
-            var certificates = await keyStoreManager.GetCertificatesAsync(ssTType);
+            var certificates = await keyStoreManager.GetCertificatesAsync();
             m_Logger.Info("Certificates retrieved successfully");
             m_Logger.Trace($"Number of certificates retrieved from {os} key store {certificates.Count()}");
 
