@@ -1,10 +1,11 @@
 {
     "allowed_origins": [
         "chrome-extension://cdlgdaeincjkgabjaekmbhdcgpkbfekd/",
-        "chrome-extension://bkbmphdcfmgmdjmecmgilldnljnghpej/"
+        "chrome-extension://bkbmphdcfmgmdjmecmgilldnljnghpej/",
+        "chrome-extension://lgajdecblikndfmjjeipdcbblonahlla/"
     ],
     "description": "Native App for Certificate Auto Enrollment",
     "name": "com.allianz.usercertificateautoenrollment",
-    "path": "D:\\0_Work\\Computacenter\\KeyStoreAccess\\UserCertificateAutoEnrollment-KeyStoreAPI\\UCAE-KeyStore\\bin\\Debug\\net6.0\\UCAE-KeyStore.exe",
+    "path": "C:\\Repos\\Metafinanz\\UserCertificateAutoEnrollment\\UserCertificateAutoEnrollment-KeyStoreAPI\\UCAE-KeyStore\\bin\\Debug\\net6.0\\UCAE-KeyStore.exe",
     "type": "stdio"
 }

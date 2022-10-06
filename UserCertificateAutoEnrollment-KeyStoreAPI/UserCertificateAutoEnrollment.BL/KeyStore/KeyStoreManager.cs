@@ -1,28 +1,17 @@
 ﻿using NLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.Common.Contracts;
-using UserCertificateAutoEnrollment.BL.Session;
-using UserCetrificateAutoEnrollment.BL.Windows;
 
 namespace UserCertificateAutoEnrollment.BL.KeyStore
 {
     public class KeyStoreManager : IKeyStoreManager
     {
         private readonly IKeyStoreResolver m_KeyStore;
-        //private readonly IHttpClient m_HttpClient;
         private readonly NLog.Logger m_Logger = LogManager.GetCurrentClassLogger();
-        //private readonly ISession m_CurrentSession;
 
-        public KeyStoreManager(IKeyStoreResolver keyStore/*, IHttpClient httpClient*//*, ISessionProvider sessionProvider*/)
+        public KeyStoreManager(IKeyStoreResolver keyStore)
         {
             m_KeyStore = keyStore;
-            //m_HttpClient = httpClient;
-            //m_CurrentSession = sessionProvider.CurrentSession;
         }
 
         public IKeyStoreResolver KeyStoreResolver => m_KeyStore;
@@ -36,43 +25,22 @@ namespace UserCertificateAutoEnrollment.BL.KeyStore
             return certificates;
         }
 
-        public async Task SyncCertificatesAsync(string sSTType)
+        public async Task<string> GetLoggedInUser()
         {
-            return;
-            //SSTTypesEnum inputsSTType = (SSTTypesEnum)Enum.Parse(typeof(SSTTypesEnum), sSTType);
+            m_Logger.Trace("Getting from system logged in user");
 
-            //var sstTypeUrl = Constants.SSTTypes[inputsSTType];
+            var loggedInUser = await m_KeyStore.GetLoggedInUser();
 
-            ////var sstName = Enum.GetName(typeof(SSTTypesEnum), sstType.Key);
-            //var sstUrl = sstTypeUrl;
-            //m_Logger.Info($"Processing SST: {sSTType}");
+            return loggedInUser;
+        }
 
-            ////add settings
-            ////if (inputsSTType == SSTTypesEnum.INTERCEPTION && !m_RegistrySettings.AllowInterception)
-            //if (inputsSTType == SSTTypesEnum.INTERCEPTION && false)
-            //{
-            //    return;
-            //}
+        public async Task SyncCertificatesAsync(byte[] rawData, string sessionKey)
+        {
+            m_Logger.Trace("Syncing certificates using PFX file");
 
-            //m_Logger.Trace("Checking if session has trust certificate");
-            //if (m_CurrentSession.TrustCert == null)
-            //{
-            //    m_Logger.Trace("No trust certificate found for current session");
-            //    m_Logger.Info("Intialize trust certificate");
-            //    await m_KeyStore.InitializeTrust();
-            //}
+            bool syncSuccessfull = await m_KeyStore.ImportCertificatesAsync(rawData, sessionKey);
 
-            //var certificateBytes = await m_HttpClient.GetCertificate(sstUrl);
-            //var certifcatesBytesSignature = await m_HttpClient.GetCertificateSignature(sstUrl);
-
-            //var certificateOk = m_KeyStore.VerifySignature(certificateBytes, certifcatesBytesSignature);
-
-            //if (certificateOk)
-            //{
-            //    m_Logger.Info("Signature verification passed, add certificates to the list for processing.");
-
-            //    await m_KeyStore.ImportCertificate(certificateBytes, sSTType);
-            //}
+            m_Logger.Info($"Syncing certificates result: {syncSuccessfull}.In case sync is not successfully, check previous logs");
         }
     }
 }

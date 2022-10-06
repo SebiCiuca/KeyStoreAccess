@@ -2,6 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using Sentry;
+using System.Net.Http.Headers;
+using System.Security.Principal;
 using UCAE_KeyStore.Helpers;
 using Formatting = Newtonsoft.Json.Formatting;
 
@@ -10,31 +13,54 @@ namespace UCAE_KeyStore
     internal class Program
     {
         static Logger m_Logger;
+        const string NLOG_SESSION_KEY = "SessionKey";
         public static void Main(string[] args)
         {
             m_Logger = LogManager.Setup().GetCurrentClassLogger();
-            m_Logger.Debug("init main");
+            m_Logger.Info("App Started!");
 
             try
             {
                 m_Logger.Debug("Registering DI");
+                m_Logger.Debug("Running process under {0}", WindowsIdentity.GetCurrent().Name);
+
                 var serviceProvider = RegisterDependencies.RegisterAppDependencies();
+
+                m_Logger.Debug("DI Registered");
 
                 using (serviceProvider as IDisposable)
                 {
                     var messageProcessor = serviceProvider.GetRequiredService<IMessageProcessor>();
 
-                    m_Logger.Debug($"Cretead message processor. {messageProcessor.GetType()}");
+                    m_Logger.Debug($"Created message processor. {messageProcessor.GetType()}");
 
                     JObject command;
                     while ((command = Read()) != null)
                     {
-                        m_Logger.Debug($"Recieved from CE {command}");
-                        var responseToSend = messageProcessor.ProcessCommand(command).Result;
+                        var ceCommand = command.ToObject<CommandModel>();
+
+                        if (!string.IsNullOrWhiteSpace(ceCommand.SessionKey))
+                        {
+                            GlobalDiagnosticsContext.Set(NLOG_SESSION_KEY, ceCommand.SessionKey);
+                        }
+
+                        if (ceCommand == null)
+                        {
+                            m_Logger.Warn("Could not deserialize command from extention");
+
+                            return;
+                        }
+
+                        var responseToSend = messageProcessor.ProcessCommand(ceCommand).Result;
+
+                        m_Logger.Debug("Sending response to CE {0}", JsonConvert.SerializeObject(responseToSend));
+
                         if (!string.IsNullOrEmpty(responseToSend))
                         {
                             Write(responseToSend);
                         }
+
+                        GlobalDiagnosticsContext.Remove(NLOG_SESSION_KEY);
                     }
                 }
 
@@ -47,7 +73,9 @@ namespace UCAE_KeyStore
             }
             finally
             {
-                NLog.LogManager.Shutdown();
+                m_Logger.Info("Logger shutting down");
+
+                LogManager.Shutdown();
             }
         }
 
@@ -71,9 +99,11 @@ namespace UCAE_KeyStore
                     reader.Read(buffer, 0, buffer.Length);
                 }
             }
-            m_Logger.Debug(buffer);
+            var stringMessage = new string(buffer);
 
-            return JsonConvert.DeserializeObject<JObject>(new string(buffer));
+            m_Logger.Info($"Recieved from CE {stringMessage}");
+
+            return JsonConvert.DeserializeObject<JObject>(stringMessage);
         }
 
         public static void Write(JToken data)

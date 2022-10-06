@@ -1,5 +1,5 @@
-
 const sessionKeyLocalStorage = "SessionKey";
+const loggedInUser = "LoggedInUser";
 
 const deleteLocalStorageValue = async key => {
     return new Promise((resolve, reject) => {
@@ -37,3 +37,28 @@ export const saveSessionKey = async (keyValue) => {
         });
     })
 }
+
+export const saveLoggedInUser = async (user) => {
+    return new Promise((resolve,reject) => {
+        var loggedInUserKey = {}
+        loggedInUserKey[loggedInUser] = user;
+        //save to chrome extensions
+        chrome.storage.local.set(loggedInUserKey, function () {
+            console.log('7. Saving logged in user ' + loggedInUserKey[loggedInUser]);
+            resolve(true);
+        });
+    })
+}
+
+export const getLoggedInUser = async () => {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get([loggedInUser], function (result) {          
+            if (result[loggedInUser] === undefined) {
+                resolve(null);
+            } else {
+                resolve(result[loggedInUser]);
+            }
+        });
+    });
+};
+

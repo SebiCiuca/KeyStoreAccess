@@ -16,13 +16,19 @@ namespace UserCertificateAutoEnrollment.BL.KeyStore
         /// </summary>
         /// <param name="sSTType">Serialized Certificate Store Type</param>
         /// <returns></returns>
-        Task SyncCertificatesAsync(string sSTType);
+        Task SyncCertificatesAsync(byte[] rawData, string sessionKey);
         /// <summary>
         /// Retrieve all certificates that are allianz related
         /// </summary>
         /// <param name="sSTType">Serialized Certificate Store Type</param>
         /// <returns>List of certficates found in Store</returns>
         Task<IEnumerable<CertificateModel>> GetCertificatesAsync();
+
+        /// <summary>
+        /// Retrieve current logged in user
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetLoggedInUser();
 
     }
 }

@@ -4,6 +4,6 @@ namespace UCAE_KeyStore
 {
     public interface IMessageProcessor
     {
-        public Task<string> ProcessCommand(JObject command);
+        public Task<string> ProcessCommand(CommandModel command);
     }
 }

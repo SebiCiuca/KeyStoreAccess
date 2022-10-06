@@ -1,7 +1,9 @@
 ﻿using NLog;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.Common.Contracts;
 
@@ -10,19 +12,11 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
     public class WindowsKeyStoreResolver : IKeyStoreResolver
     {
         private readonly Logger m_Logger = LogManager.GetCurrentClassLogger();
-        //private ISession m_Session;
-        //private readonly IHttpClient m_HttpClient;
 
-        public WindowsKeyStoreResolver(/*ISession session/*, IHttpClient httpClient*/)
-        {
-            //m_Session = session;
-           // m_HttpClient = httpClient;
-        }
-
-        public async Task<IEnumerable<CertificateModel>> ListCertificatesAsync()
+        private IEnumerable<CertificateModel> GetStoreCertificates(StoreName name, StoreLocation location)
         {
             //open local store 
-            using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            using var store = new X509Store(name, location);
 
             //for listing certificates we only need readonly access
             store.Open(OpenFlags.ReadOnly);
@@ -39,19 +33,29 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
                     continue;
                 }
 
-                var privateKey = cert.GetRSAPrivateKey();
+                RSACng rsa = null;
 
-                if (privateKey == null)
+                try
                 {
-                    throw new Exception("Private key should be present, but could not be retrieved");
+                    var privateKey = cert.GetRSAPrivateKey();
+
+                    if (privateKey == null)
+                    {
+                        throw new Exception("Private key should be present, but could not be retrieved");
+                    }
+
+                    rsa = (RSACng)privateKey;
+
+                    //we search only for RSA Keys
+                    if (rsa == null)
+                    {
+                        throw new NotSupportedException("Private key cannot be used with RSA algorithm");
+                    }
                 }
-
-                RSACng rsa = (RSACng)privateKey;
-
-                //we search only for RSA Keys
-                if (rsa == null)
+                catch (Exception ex)
                 {
-                    throw new NotSupportedException("Private key cannot be used with RSA algorithm");
+                    m_Logger.Error($"Could not retrieve private key for certificate {cert.Subject}.\n" +
+                        $"Error message: {ex.Message}");
                 }
 
                 validCertificates.Add(new CertificateModel
@@ -61,13 +65,122 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
                     NotBefore = cert.NotBefore,
                     SerialNumber = cert.SerialNumber,
                     SubjectName = cert.Subject,
-                    Provider = rsa.Key?.Provider?.Provider,
-                    UniqueIdentifier = rsa.Key.UniqueName
+                    PrivateKeyPresent = true,
+                    Provider = rsa?.Key.Provider.Provider ?? "N/A",
+                    UniqueIdentifier = rsa?.Key.UniqueName ?? "N/A"
                 });
             }
 
-            return await Task.FromResult(validCertificates);
+            return validCertificates;
         }
+
+        private string GetLoggedInUserEmail()
+        {
+            return "sebi_ciuca@email.com";
+        }
+
+        private string GetFullPassowrd(string passwordUniqueChars)
+        {
+            return $"{passwordUniqueChars}{GetLoggedInUserEmail()}";
+        }
+        private X509Certificate2 FindCertificate(string thumbPrint, X509Store store)
+        {
+            X509Certificate2Collection foundX509Certificates = store.Certificates.Find(X509FindType.FindByThumbprint, thumbPrint, false);
+
+            if (foundX509Certificates != null || foundX509Certificates.Count > 0)
+            {
+                return foundX509Certificates.FirstOrDefault();
+            }
+
+            return null;
+        }
+
+        public void SetKeyExtangeUsage(X509Store store, X509Certificate2 certificate, string OID, string friendlyName, bool removeOtherUsages = false)
+        {
+            var currentExtentions = certificate.Extensions.OfType<X509EnhancedKeyUsageExtension>().ToList();
+
+            //certificate.Extensions.
+            //List<int> l = new List<int>();
+
+            //l.RemoveAt(0);
+
+            ////if (removeOtherUsages)
+            ////{
+            ////    var ext = certificate.Extensions.Add( ext);
+
+            ////    ext.
+            ////}
+
+            certificate.Extensions.Add(new X509EnhancedKeyUsageExtension
+            {
+                Oid = new Oid
+                {
+                    Value = OID,
+                    FriendlyName = friendlyName
+                },
+                Critical = false
+            });
+
+            store.Remove(certificate);
+            store.Add(certificate);
+
+            store.Close();
+        }
+
+
+        public async Task<IEnumerable<CertificateModel>> ListCertificatesAsync()
+        {
+            List<CertificateModel> validCertificates = new();
+
+            validCertificates.AddRange(GetStoreCertificates(StoreName.My, StoreLocation.CurrentUser));
+            validCertificates.AddRange(GetStoreCertificates(StoreName.My, StoreLocation.LocalMachine));
+            validCertificates.AddRange(GetStoreCertificates(StoreName.Root, StoreLocation.CurrentUser));
+            validCertificates.AddRange(GetStoreCertificates(StoreName.Root, StoreLocation.LocalMachine));
+
+            return validCertificates;
+        }
+
+        public Task<string> GetLoggedInUser() => Task.FromResult(WindowsIdentity.GetCurrent().Name);
+
+        public Task<bool> ImportCertificatesAsync(byte[] pfxFile, string passwordUniqueChars)
+        {
+            bool isSuccessfull = false;
+            try
+            {
+                var password = GetFullPassowrd(passwordUniqueChars);
+
+                X509Certificate2 cert = new X509Certificate2(pfxFile, password, X509KeyStorageFlags.PersistKeySet);
+
+                using X509Store store = new X509Store(StoreName.My);
+                store.Open(OpenFlags.ReadWrite);
+                store.Add(cert);
+                store.Close();
+
+                isSuccessfull = true;
+            }
+            catch (Exception ex)
+            {
+                m_Logger.Error(ex, "Exception at importing pfx file");
+            }
+
+            return Task.FromResult(isSuccessfull);
+        }
+
+        public async Task<bool> SetAuthKeyUsageExtension(string certThumbprint)
+        {
+            var allianzCertificates = await ListCertificatesAsync();
+            using X509Store store = new X509Store(StoreName.My);
+
+            //foreach (var cert in allianzCertificates)
+            //{
+            //    var certificate = FindCertificate(cert.UniqueIdentifier, store);
+
+            //    Se
+            //}
+
+            return true;
+        }
+
 
         //public void DeleteCertficate(string certificateName)
         //{
@@ -148,51 +261,8 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
         //    store.Close();
         //}
 
-        //public void SetKeyUsage(string certificateName, List<OidsModel> extenedKeyUsage)
-        //{
-        //    if (!certificateName.StartsWith(Constants.CertificateNameStart))
-        //    {
-        //        certificateName = string.Concat(Constants.CertificateNameStart, certificateName);
-        //    }
+     
 
-        //    using X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-        //    store.Open(OpenFlags.ReadWrite);
-        //    var certificate = store.Certificates.OfType<X509Certificate2>().FirstOrDefault(c => c.FriendlyName == certificateName);
-
-        //    var currentExtentions = certificate.Extensions.OfType<X509EnhancedKeyUsageExtension>();
-
-        //    extenedKeyUsage = extenedKeyUsage.Where(eku => !currentExtentions.Any(ce => ce.Oid.Equals(eku))).ToList();
-
-        //    foreach (var key in extenedKeyUsage)
-        //    {
-        //        certificate.Extensions.Add(new X509EnhancedKeyUsageExtension
-        //        {
-        //            Oid = new Oid
-        //            {
-        //                Value = key.Oid,
-        //                FriendlyName = key.FriendlyName
-        //            },
-        //            Critical = false
-        //        });
-        //    }
-
-        //    store.Remove(certificate);
-        //    store.Add(certificate);
-
-        //    store.Close();
-        //}
-
-        //private bool FindCertificate(StoreName storeName, X509Certificate2 certificate, StoreLocation storeLocation, X509Store store)
-        //{
-        //    X509Certificate2Collection foundX509Certificates = store.Certificates.Find(X509FindType.FindByThumbprint, certificate.Thumbprint, false);
-
-        //    if (foundX509Certificates != null || foundX509Certificates.Count > 0)
-        //    {
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
 
         //private bool ValidateCertificate(byte[] codeSignCertBytes, byte[] condeSignCertIssuerBytes)
         //{
@@ -387,7 +457,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
         //    return false;
         //}
 
-      
+
 
         //public void AddCertificate(StoreName storeName, X509Certificate2 certificate, StoreLocation storeLocation = StoreLocation.LocalMachine)
         //{

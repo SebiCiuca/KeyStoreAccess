@@ -10,6 +10,27 @@ namespace UserCertificateAutoEnrollment.BL.Common.Contracts
         /// <returns></returns>
         Task<IEnumerable<CertificateModel>> ListCertificatesAsync();
 
+        /// <summary>
+        /// Returns logged in user
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetLoggedInUser();
+
+        /// <summary>
+        /// Imports a PFX file recieved as byte[] into Certificate Store under Current User
+        /// </summary>
+        /// <param name="pfxFile">PFX Raw Data</param>
+        /// <param name="passwordUniqueChars">PFX Password</param>
+        /// <returns></returns>
+        Task<bool> ImportCertificatesAsync(byte[] pfxFile, string passwordUniqueChars);
+
+        /// <summary>
+        /// retrives a certificate from store and set it's key store extention usage as Server Authentication
+        /// </summary>
+        /// <param name="certThumbprint"></param>
+        /// <returns></returns>
+        Task<bool> SetAuthKeyUsageExtension(string certThumbprint);
+
         ///// <summary>
         ///// Verify certificate and it signature
         ///// </summary>

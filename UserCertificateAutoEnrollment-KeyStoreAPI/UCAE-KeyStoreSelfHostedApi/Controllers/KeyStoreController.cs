@@ -49,7 +49,7 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
             var keyStore = m_KeyStoreFactory.GetKeyStoreManager(os);
             m_Logger.Trace($"Created key store manager of type {keyStore.GetType()}");
 
-            await keyStore.SyncCertificatesAsync(ssTType);
+            //await keyStore.SyncCertificatesAsync(ssTType);
 
             return Ok();
         }
