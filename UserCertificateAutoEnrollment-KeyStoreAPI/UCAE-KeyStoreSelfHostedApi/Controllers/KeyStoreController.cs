@@ -20,9 +20,9 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
 
         [HttpGet]
         [Route("GetCertificates")]
-        public async Task<IActionResult> GetCertificatesAsync(string ssTType)
+        public async Task<IActionResult> GetCertificatesAsync()
         {
-            m_Logger.Info($"List of certificates was requested");            
+            m_Logger.Info($"List of certificates was requested");
             var os = "windows";
             m_Logger.Info($"Retriving list of certificates from {os} OS");
             var keyStoreManager = m_KeyStoreFactory.GetKeyStoreManager(os);
@@ -30,9 +30,7 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
 
             var certificates = await keyStoreManager.GetCertificatesAsync();
             m_Logger.Info("Certificates retrieved successfully");
-            m_Logger.Trace($"Number of certificates retrieved from {os} key store {certificates.Count()}");
-
-            //return new List<object>();
+            m_Logger.Trace($"Number of certificates retrieved from {os} key store {certificates.LocalCertificates.Count()}");
 
             return Ok(certificates);
         }
@@ -50,6 +48,21 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
             m_Logger.Trace($"Created key store manager of type {keyStore.GetType()}");
 
             //await keyStore.SyncCertificatesAsync(ssTType);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("Auth")]
+        public async Task<IActionResult> SetAuthCert(string thumb)
+        {
+            var os = "windows";
+
+            var keyStoreManager = m_KeyStoreFactory.GetKeyStoreManager(os);
+
+            var email = keyStoreManager.GetEmail();
+
+            //keyStoreManager.KeyStoreResolver.SetAuthKeyUsageExtension(thumb);
 
             return Ok();
         }

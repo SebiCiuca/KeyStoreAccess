@@ -1,72 +1,75 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Targets;
-using System.Text.Json;
+using Sentry;
+using UCAE_KeyStore.SessionManager;
 using UserCertificateAutoEnrollment.BL.KeyStore;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace UCAE_KeyStore
 {
     public class MessageProcessor : IMessageProcessor
     {
-        private readonly NLog.Logger m_Logger = NLog.LogManager.GetCurrentClassLogger();
+        //private readonly NLog.Logger m_Logger = LogManager.GetCurrentClassLogger();
         private readonly IKeyStoreManager m_KeyStoreManager;
-        private const string OS = "windows";
+        private readonly ISessionManager m_SessionManager;
+        private readonly ILogger m_Logger;
 
-        public MessageProcessor(IKeyStoreFactory keyStoreFactory)
+        public MessageProcessor(IKeyStoreFactory keyStoreFactory, ISessionManager sessionManager, ILogger<MessageProcessor> logger)
         {
-            m_KeyStoreManager = keyStoreFactory.GetKeyStoreManager(OS);
+            m_KeyStoreManager = keyStoreFactory.GetKeyStoreManager(Helpers.Constants.WINDOWS_OS);
+            m_SessionManager = sessionManager;
+            m_Logger = logger;
         }
 
         private async Task<string> ProcessGetCertificatesCommand()
         {
-            m_Logger.Debug("Processing get certificates list command");
+            m_Logger.LogDebug("Processing get certificates list command");
 
             var certificates = await m_KeyStoreManager.GetCertificatesAsync();
 
-            m_Logger.Trace($"Found {certificates.ToList().Count} certificates");
+            m_Logger.LogTrace($"Found {certificates.LocalCertificates.ToList().Count} certificates");
 
             var result = JsonConvert.SerializeObject(certificates);
 
             return result;
         }
 
-        private async Task<string> ProcessSyncCertificates(byte[] rawData, string sessionKey)
+        private async Task<string> ProcessSyncCertificates(string certificates, string sessionKey)
         {
-            m_Logger.Debug("Processing sync certificates list command");
+            m_Logger.LogDebug("Processing sync certificates list command");
 
-            await m_KeyStoreManager.SyncCertificatesAsync(rawData, sessionKey);
+            await m_KeyStoreManager.SyncCertificatesAsync(certificates, sessionKey);
 
             return "Sync done. Check logs for sync result!";
         }
 
         private async Task<string> ProcessGetLoggedInUser()
         {
-            m_Logger.Debug("Processing get logged in user command");
+            m_Logger.LogDebug("Processing get logged in user command");
 
             var loggedInUser = await m_KeyStoreManager.GetLoggedInUser();
+            var user = await m_KeyStoreManager.GetEmail();
 
-            m_Logger.Info("Logged in user {0}", loggedInUser);
+            SentrySdk.CaptureMessage($"E-mail of logged in user is {user}");
+
+            m_Logger.LogInformation("Logged in user {0}", loggedInUser);
 
             return loggedInUser;
         }
 
         private async Task<string> ProcessUploadLogs(string sessionKey)
         {
-            m_Logger.Debug("Getting logs for upload");
+            m_Logger.LogDebug("Getting logs for upload");
 
-            var fileTarget = LogManager.Configuration.FindTargetByName<FileTarget>("UCAELogSessionFile");
-
+            var fileTarget = LogManager.Configuration.FindTargetByName<FileTarget>($"LOG_{sessionKey}");
 
             if (fileTarget != null)
             {
+                m_Logger.LogInformation($"Found file with target LOG_{sessionKey}");
 
-                m_Logger.Info("Found inMemoryTarget");
-
-                // List<string> logs = fileTarget.l.ToList();//.Where(l => l.Contains(sessionKey)).ToList();
                 var logs = new List<string>();
-
-                //m_Logger.Info("Found logs", JsonSerializer.Serialize(logs));
 
                 return string.Join("\n", logs);
             }
@@ -101,7 +104,7 @@ namespace UCAE_KeyStore
             }
 
 
-            m_Logger.Trace($"Returning to CE {returnedValue}");
+            m_Logger.LogTrace($"Returning to CE {returnedValue}");
 
             return returnedValue;
         }
@@ -110,15 +113,52 @@ namespace UCAE_KeyStore
         {
             if (command == null)
             {
-                m_Logger.Warn($"Received no data to process. Recieved from CE {JsonConvert.SerializeObject(command)}");
+                m_Logger.LogWarning($"Received no data to process. Recieved from CE {JsonConvert.SerializeObject(command)}");
+
+                SentrySdk.CaptureEvent(new SentryEvent
+                {
+                    Level = SentryLevel.Info,
+                    Message = $"Received no data to process. Recieved from CE {JsonConvert.SerializeObject(command)}"
+                });
 
                 return string.Empty;
 
             }
 
-            m_Logger.Debug($"Processing command id: {command.CommandId}");
+            m_Logger.LogDebug($"Processing command id: {command.CommandId}");
 
-            return await ProcessMessageAsync(command);
+            string tranName = "GetUsername";
+
+            if (command.SessionKey != null)
+            {
+                tranName = command.SessionKey;
+            }
+
+            var span = m_SessionManager.GetTransaction(command.SessionKey, command.CommandId);
+
+            SentrySdk.ConfigureScope(async s =>
+            {
+                s.SetTag("SessionKey", command.SessionKey);
+                s.User = new User
+                {
+                    Username = await m_KeyStoreManager.GetLoggedInUser(),
+                    Email = await m_KeyStoreManager.GetEmail()
+                };
+            });
+
+            SentrySdk.CaptureEvent(new SentryEvent
+            {
+                Level = SentryLevel.Info,
+                Message = $"Processing command {JsonConvert.SerializeObject(command)}"
+            });
+
+
+            var result = await ProcessMessageAsync(command);
+
+            span.Finish();
+            m_SessionManager.FinishTransaction();
+
+            return result;
         }
     }
 }

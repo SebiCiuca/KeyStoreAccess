@@ -1,6 +1,7 @@
 ﻿using NLog;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
@@ -13,7 +14,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
     {
         private readonly Logger m_Logger = LogManager.GetCurrentClassLogger();
 
-        private IEnumerable<CertificateModel> GetStoreCertificates(StoreName name, StoreLocation location)
+        private IEnumerable<CertificateDTO> GetStoreCertificates(StoreName name, StoreLocation location)
         {
             //open local store 
             using var store = new X509Store(name, location);
@@ -23,15 +24,16 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
 
             //load all certificates
             var certificates = store.Certificates.OfType<X509Certificate2>();
-            List<CertificateModel> validCertificates = new();
+            List<CertificateDTO> validCertificates = new();
+            var ekusString = new List<string>();
 
             foreach (var cert in certificates)
             {
 
-                if (!cert.HasPrivateKey)
-                {
-                    continue;
-                }
+                //if (!cert.HasPrivateKey)
+                //{
+                //    continue;
+                //}
 
                 RSACng rsa = null;
 
@@ -51,6 +53,13 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
                     {
                         throw new NotSupportedException("Private key cannot be used with RSA algorithm");
                     }
+
+                    var ekus = cert.Extensions.OfType<X509EnhancedKeyUsageExtension>().FirstOrDefault()?.EnhancedKeyUsages;
+                    foreach(var eku in ekus)
+                    {
+                        ekusString.Add(eku.Value);
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -58,25 +67,28 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
                         $"Error message: {ex.Message}");
                 }
 
-                validCertificates.Add(new CertificateModel
+                validCertificates.Add(new CertificateDTO
                 {
                     Issuer = cert.Issuer,
-                    NotAfter = cert.NotAfter,
-                    NotBefore = cert.NotBefore,
+                    NotAfter = cert.NotAfter.ToLongDateString(),
                     SerialNumber = cert.SerialNumber,
-                    SubjectName = cert.Subject,
-                    PrivateKeyPresent = true,
-                    Provider = rsa?.Key.Provider.Provider ?? "N/A",
-                    UniqueIdentifier = rsa?.Key.UniqueName ?? "N/A"
+                    Subject = cert.Subject,
+                    Thumbprint = cert.Thumbprint,
+                    EKU = ekusString
                 });
+
+                ekusString.Clear();
             }
+
+
+            store.Close();
 
             return validCertificates;
         }
 
         private string GetLoggedInUserEmail()
         {
-            return "sebi_ciuca@email.com";
+            return System.DirectoryServices.AccountManagement.UserPrincipal.Current.EmailAddress;
         }
 
         private string GetFullPassowrd(string passwordUniqueChars)
@@ -85,7 +97,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
         }
         private X509Certificate2 FindCertificate(string thumbPrint, X509Store store)
         {
-            X509Certificate2Collection foundX509Certificates = store.Certificates.Find(X509FindType.FindByThumbprint, thumbPrint, false);
+            X509Certificate2Collection foundX509Certificates = store.Certificates.Find(X509FindType.FindBySerialNumber, thumbPrint, false);
 
             if (foundX509Certificates != null || foundX509Certificates.Count > 0)
             {
@@ -95,52 +107,20 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
             return null;
         }
 
-        public void SetKeyExtangeUsage(X509Store store, X509Certificate2 certificate, string OID, string friendlyName, bool removeOtherUsages = false)
+        public async Task<IEnumerable<CertificateDTO>> ListCertificatesAsync()
         {
-            var currentExtentions = certificate.Extensions.OfType<X509EnhancedKeyUsageExtension>().ToList();
-
-            //certificate.Extensions.
-            //List<int> l = new List<int>();
-
-            //l.RemoveAt(0);
-
-            ////if (removeOtherUsages)
-            ////{
-            ////    var ext = certificate.Extensions.Add( ext);
-
-            ////    ext.
-            ////}
-
-            certificate.Extensions.Add(new X509EnhancedKeyUsageExtension
-            {
-                Oid = new Oid
-                {
-                    Value = OID,
-                    FriendlyName = friendlyName
-                },
-                Critical = false
-            });
-
-            store.Remove(certificate);
-            store.Add(certificate);
-
-            store.Close();
-        }
-
-
-        public async Task<IEnumerable<CertificateModel>> ListCertificatesAsync()
-        {
-            List<CertificateModel> validCertificates = new();
+            List<CertificateDTO> validCertificates = new();
 
             validCertificates.AddRange(GetStoreCertificates(StoreName.My, StoreLocation.CurrentUser));
-            validCertificates.AddRange(GetStoreCertificates(StoreName.My, StoreLocation.LocalMachine));
-            validCertificates.AddRange(GetStoreCertificates(StoreName.Root, StoreLocation.CurrentUser));
-            validCertificates.AddRange(GetStoreCertificates(StoreName.Root, StoreLocation.LocalMachine));
+            //validCertificates.AddRange(GetStoreCertificates(StoreName.My, StoreLocation.LocalMachine));
+            //validCertificates.AddRange(GetStoreCertificates(StoreName.Root, StoreLocation.CurrentUser));
+            //validCertificates.AddRange(GetStoreCertificates(StoreName.Root, StoreLocation.LocalMachine));
 
             return validCertificates;
         }
 
         public Task<string> GetLoggedInUser() => Task.FromResult(WindowsIdentity.GetCurrent().Name);
+        public Task<string> GetEmail() => Task.FromResult(GetLoggedInUserEmail());
 
         public Task<bool> ImportCertificatesAsync(byte[] pfxFile, string passwordUniqueChars)
         {
@@ -168,17 +148,43 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
 
         public async Task<bool> SetAuthKeyUsageExtension(string certThumbprint)
         {
-            var allianzCertificates = await ListCertificatesAsync();
-            using X509Store store = new X509Store(StoreName.My);
+            using X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadWrite);
 
-            //foreach (var cert in allianzCertificates)
-            //{
-            //    var certificate = FindCertificate(cert.UniqueIdentifier, store);
+            try
+            {
+                var certificate = FindCertificate(certThumbprint, store);
+                bool certificateUpdateSuccesfully = false;
 
-            //    Se
-            //}
+                if (certificate != null)
+                {
+                    certificateUpdateSuccesfully = WindowsCertificateFactory.SetClientAuthEKU(certificate);
+                }
 
-            return true;
+                if (certificateUpdateSuccesfully)
+                {
+                    var allianzCertificates = await ListCertificatesAsync();
+                    foreach (var cert in allianzCertificates)
+                    {
+                        var toRemoveClienAuthcertificate = FindCertificate(cert.SerialNumber, store);
+
+                        if (toRemoveClienAuthcertificate != null && toRemoveClienAuthcertificate.HasCertificateClientAuthEKU())
+                        {
+                            WindowsCertificateFactory.RemoveClientAuthEKU(toRemoveClienAuthcertificate);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+               throw;
+            }
+            finally
+            {
+                store.Close();
+            }
+
+            return false;
         }
 
 
@@ -261,7 +267,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
         //    store.Close();
         //}
 
-     
+
 
 
         //private bool ValidateCertificate(byte[] codeSignCertBytes, byte[] condeSignCertIssuerBytes)

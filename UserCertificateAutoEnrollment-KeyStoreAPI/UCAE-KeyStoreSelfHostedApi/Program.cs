@@ -28,7 +28,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    builder.Services.AddSingleton<ISessionProvider, SessionProvider>();
+    builder.Services.AddSingleton<ISessionProvider, SessionManager>();
     builder.Services.AddTransient<ICryptoService, CryptoService>();
     builder.Services.AddTransient<IHttpClient, UserCertificateAutoEnrollment.BL.Http.HttpClient>();
     builder.Services.ConfigureKeyStoreServices();

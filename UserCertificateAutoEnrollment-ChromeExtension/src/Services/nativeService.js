@@ -37,18 +37,11 @@ export const getLogs = async () => {
      
 }
 
-// function sendNativeMessage(command, commandValue) {
-//      commandInProgress = command;
-//      var message =
-//      {
-//           "CommandId": command,
-//           "CommandValue": ""
-//      }
-//      console.log('Sending message to native app: ' + JSON.stringify(message));
-//      console.log('Port: ' + JSON.stringify(usercertificateautoenrollmentHost));
-//      usercertificateautoenrollmentHost.postMessage(message);
-//      console.log('Sent message to native app: ' + JSON.stringify(message));
-// }
+export const syncCertificates = async (certs) => {
+     var command = commands[1];
+     console.log("Sending commnand " + command.Id);
+     await sendNativeMessageV2(command.Id, certs);
+}
 
 async function sendNativeMessageV2(command, commandValue) {
      commandInProgress = command;

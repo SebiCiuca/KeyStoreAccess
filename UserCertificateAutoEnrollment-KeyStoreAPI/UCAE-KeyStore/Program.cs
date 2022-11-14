@@ -3,8 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using Sentry;
-using System.Net.Http.Headers;
-using System.Security.Principal;
+using System.Text;
 using UCAE_KeyStore.Helpers;
 using Formatting = Newtonsoft.Json.Formatting;
 
@@ -22,7 +21,6 @@ namespace UCAE_KeyStore
             try
             {
                 m_Logger.Debug("Registering DI");
-                m_Logger.Debug("Running process under {0}", WindowsIdentity.GetCurrent().Name);
 
                 var serviceProvider = RegisterDependencies.RegisterAppDependencies();
 
@@ -39,16 +37,16 @@ namespace UCAE_KeyStore
                     {
                         var ceCommand = command.ToObject<CommandModel>();
 
-                        if (!string.IsNullOrWhiteSpace(ceCommand.SessionKey))
-                        {
-                            GlobalDiagnosticsContext.Set(NLOG_SESSION_KEY, ceCommand.SessionKey);
-                        }
-
                         if (ceCommand == null)
                         {
                             m_Logger.Warn("Could not deserialize command from extention");
 
                             return;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(ceCommand.SessionKey))
+                        {
+                            GlobalDiagnosticsContext.Set(NLOG_SESSION_KEY, ceCommand.SessionKey);
                         }
 
                         var responseToSend = messageProcessor.ProcessCommand(ceCommand).Result;
@@ -69,6 +67,7 @@ namespace UCAE_KeyStore
             {
                 m_Logger.Error(ex.Message);
                 m_Logger.Error(ex, "Stopped program because of exception");
+                SentrySdk.CaptureException(ex);
                 throw;
             }
             finally
@@ -85,6 +84,8 @@ namespace UCAE_KeyStore
             var stdin = Console.OpenStandardInput();
             m_Logger.Debug("StDin initialized");
             var length = 0;
+
+            //LogInput(stdin);
 
             var lengthBytes = new byte[4];
             stdin.Read(lengthBytes, 0, 4);
@@ -120,6 +121,37 @@ namespace UCAE_KeyStore
             stdout.WriteByte((byte)((bytes.Length >> 24) & 0xFF));
             stdout.Write(bytes, 0, bytes.Length);
             stdout.Flush();
+        }
+
+        /// <summary>
+        /// Copies the contents of input to output. Doesn't close either stream.
+        /// </summary>
+        public static string ByteToString(byte[] array, int count)
+        {
+            char[] chars = Encoding.UTF8.GetChars(array, 0, count);
+
+            return new string(chars);
+        }
+
+        private static void LogInput(Stream stdin)
+        {
+            byte[] bytes = new byte[2500];
+            byte[] lengthBytes = new byte[4];
+            stdin.Read(lengthBytes, 0, 4);
+            int length = BitConverter.ToInt32(lengthBytes, 0);
+            m_Logger.Debug("Message length in byte format: {0}", ByteToString(lengthBytes, 4));
+
+            m_Logger.Debug("Message length: {0}", length);
+
+            byte[] reverse = BitConverter.GetBytes(length);
+
+            m_Logger.Debug("Invers length in byte format: {0}", ByteToString(reverse, 4));
+
+            int outputLength = stdin.Read(bytes, 0, length);
+
+            char[] chars = Encoding.UTF8.GetChars(bytes, 0, outputLength);
+
+            m_Logger.Debug("Full message :{0}", new string(chars));
         }
     }
 }

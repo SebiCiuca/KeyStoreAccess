@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
+using Sentry;
+using UCAE_KeyStore.SessionManager;
 using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.KeyStore;
 using UserCertificateAutoEnrollment.BL.Security;
@@ -21,34 +23,31 @@ namespace UCAE_KeyStore.Helpers
                      loggingBuilder.ClearProviders();
                      loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                      loggingBuilder.AddNLog();
+                     loggingBuilder.AddSentry(config =>
+                     {
+                         config.Dsn = "https://1dbc3eb561854286a6932798932315c3@o4503936065732608.ingest.sentry.io/4503936067829760";
+                         config.InitializeSdk = false;
+                     });
                  })
                 .AddSingleton<IMessageProcessor, MessageProcessor>()
                 .AddTransient<IKeyStoreFactory, KeyStoreFactory>()
-                .AddSingleton<ISessionProvider, SessionProvider>()
+                .AddSingleton<ISessionManager, SessionManager.SessionManager>()
                 .AddTransient<ICryptoService, CryptoService>()
                 .BuildServiceProvider();
 
-            //LogManager.Configuration.AddSentry(o =>
-            //{
-            //    o.Dsn = "https://1dbc3eb561854286a6932798932315c3@o4503936065732608.ingest.sentry.io/4503936067829760";
-            //    o.Debug = true;
-            //    o.TracesSampleRate = 1.0;
-            //    o.IsGlobalModeEnabled = true;
-            //    // Optionally specify a separate format for message
-            //    o.Layout = "${message}";
-            //    // Optionally specify a separate format for breadcrumbs
-            //    o.BreadcrumbLayout = "${logger}: ${message}";
 
-            //    // Debug and higher are stored as breadcrumbs (default is Info)
-            //    o.MinimumBreadcrumbLevel = NLog.LogLevel.Debug;
-            //    // Error and higher is sent as event (default is Error)
-            //    o.MinimumEventLevel = NLog.LogLevel.Error;
+            SentrySdk.Init(o =>
+            {
+                // NOTE: Change the URL below to your own DSN. Get it on sentry.io in the project settings (or when you create a new project):
+                o.Dsn = "https://1dbc3eb561854286a6932798932315c3@o4503936065732608.ingest.sentry.io/4503936067829760";
 
-            //    // Send the logger name as a tag
-            //    o.AddTag("logger", "${logger}");
-
-            //    // All Sentry Options are accessible here.
-            //});
+                o.TracesSampleRate = 1.0;
+                // Enable offline caching
+                o.CacheDirectoryPath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "SentryCache"
+                );
+            });
 
             return serviceProvider;
         }

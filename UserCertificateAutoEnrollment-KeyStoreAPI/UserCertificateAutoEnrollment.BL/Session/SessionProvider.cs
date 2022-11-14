@@ -7,12 +7,12 @@ using UserCertificateAutoEnrollment.BL.Security;
 
 namespace UserCertificateAutoEnrollment.BL.Session
 {
-    public class SessionProvider : ISessionProvider
+    public class SessionManager : ISessionProvider
     {
         private readonly ICryptoService m_CryptoService;
         private Dictionary<byte[], ISession> m_Sessions;
 
-        public SessionProvider(ICryptoService cryptoService)
+        public SessionManager(ICryptoService cryptoService)
         {
             m_CryptoService = cryptoService;
             m_Sessions = new(new ByteArrayComparer());
