@@ -36,11 +36,18 @@ namespace UCAE_KeyStore
             return result;
         }
 
-        private async Task<string> ProcessSyncCertificates(string certificates, string sessionKey)
+        private async Task<string> ProcessSyncCertificates(string commandValue, string sessionKey)
         {
             m_Logger.LogDebug("Processing sync certificates list command");
 
-            await m_KeyStoreManager.SyncCertificatesAsync(certificates, sessionKey);
+            if (string.IsNullOrWhiteSpace(sessionKey))
+            {
+                m_Logger.LogWarning($"Could not sync certificates {nameof(sessionKey)} missing");
+
+                return $"Missing {nameof(sessionKey)} can't process certificates";
+            }
+
+            await m_KeyStoreManager.SyncCertificatesAsync(commandValue, sessionKey);
 
             return "Sync done. Check logs for sync result!";
         }
@@ -79,8 +86,7 @@ namespace UCAE_KeyStore
 
         public async Task<string> ProcessMessageAsync(CommandModel command)
         {
-            string returnedValue = string.Empty;
-
+            string returnedValue;
             switch (command.CommandId)
             {
                 case 1:

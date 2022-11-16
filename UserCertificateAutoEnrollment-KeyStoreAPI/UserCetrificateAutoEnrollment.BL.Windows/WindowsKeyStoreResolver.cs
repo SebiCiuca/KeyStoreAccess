@@ -55,7 +55,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
                     }
 
                     var ekus = cert.Extensions.OfType<X509EnhancedKeyUsageExtension>().FirstOrDefault()?.EnhancedKeyUsages;
-                    foreach(var eku in ekus)
+                    foreach (var eku in ekus)
                     {
                         ekusString.Add(eku.Value);
                     }
@@ -140,7 +140,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
             }
             catch (Exception ex)
             {
-                m_Logger.Error(ex, "Exception at importing pfx file");
+                m_Logger.Error(ex, $"Exception at importing pfx file: {ex.Message}");
             }
 
             return Task.FromResult(isSuccessfull);
@@ -177,7 +177,7 @@ namespace UserCetrificateAutoEnrollment.BL.Windows
             }
             catch (Exception ex)
             {
-               throw;
+                throw;
             }
             finally
             {

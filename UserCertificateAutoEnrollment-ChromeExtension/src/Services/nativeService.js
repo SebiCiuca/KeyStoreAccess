@@ -50,7 +50,7 @@ async function sendNativeMessageV2(command, commandValue) {
      var message =
      {
           "CommandId": command,
-          "CommandValue": commandValue,
+          "CommandValue": JSON.stringify(commandValue),
           "SessionKey": sessionKey
      }
      console.log('3. Sending message to native app: ' + JSON.stringify(message));
@@ -75,7 +75,7 @@ async function onNativeMessage(message) {
                // code block
                break;
           case 2:
-               // code block
+               console.log(message);
                break;
           case 3:
                // code block

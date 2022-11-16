@@ -68,6 +68,11 @@ namespace UserCertificateAutoEnrollment.BL.KeyStore
         {
             m_Logger.Trace("Syncing certificates using PFX file");
 
+            if (string.IsNullOrWhiteSpace(sessionKey))
+            {
+                m_Logger.Warn($"Could not sync certificates {nameof(sessionKey)} missing");
+            }
+
             var importCertificateDto = JsonSerializer.Deserialize<ImportCertManagerDTO>(importCerts);
 
             bool syncSuccessfull = await m_KeyStore.ImportCertificatesAsync(importCertificateDto.Pkcs12, sessionKey);

@@ -32,8 +32,8 @@ namespace UCAE_KeyStore
 
                     m_Logger.Debug($"Created message processor. {messageProcessor.GetType()}");
 
-                    JObject command;
-                    while ((command = Read()) != null)
+                    JObject command = Read();
+                    if (command != null)
                     {
                         var ceCommand = command.ToObject<CommandModel>();
 
@@ -80,31 +80,43 @@ namespace UCAE_KeyStore
 
         public static JObject Read()
         {
-            m_Logger.Debug("Read started");
-            var stdin = Console.OpenStandardInput();
-            m_Logger.Debug("StDin initialized");
-            var length = 0;
-
-            //LogInput(stdin);
-
-            var lengthBytes = new byte[4];
-            stdin.Read(lengthBytes, 0, 4);
-            length = BitConverter.ToInt32(lengthBytes, 0);
-            m_Logger.Debug($"Message length: {length}");
-
-            var buffer = new char[length];
-            using (var reader = new StreamReader(stdin))
+            try
             {
-                while (reader.Peek() >= 0)
+                m_Logger.Debug("Read started");
+                var stdin = Console.OpenStandardInput();
+                m_Logger.Debug("StDin initialized");
+                var length = 0;
+
+                var lengthBytes = new byte[4];
+                stdin.Read(lengthBytes, 0, 4);
+                length = BitConverter.ToInt32(lengthBytes, 0);
+                m_Logger.Debug($"Message length: {length}");
+
+                var buffer = new char[length];
+                m_Logger.Debug($"Buffer lenght: {buffer.Length}");
+                using (var reader = new StreamReader(stdin))
                 {
-                    reader.Read(buffer, 0, buffer.Length);
+                    m_Logger.Debug("Reading from stream...");
+                    while (reader.Peek() >= 0)
+                    {
+                        m_Logger.Debug("We are in reading process...please wait");
+                        int result = reader.Read(buffer, 0, buffer.Length);
+                        m_Logger.Debug($"Read {result} numer of chars");
+                    }
+                    m_Logger.Debug("Read finished");
                 }
+                var stringMessage = new string(buffer);
+
+                m_Logger.Info($"Recieved from CE {stringMessage}");
+
+                return JsonConvert.DeserializeObject<JObject>(stringMessage);
             }
-            var stringMessage = new string(buffer);
+            catch (Exception ex)
+            {
+                m_Logger.Error(ex, $"Error at reading input data");
 
-            m_Logger.Info($"Recieved from CE {stringMessage}");
-
-            return JsonConvert.DeserializeObject<JObject>(stringMessage);
+                return null;
+            }
         }
 
         public static void Write(JToken data)
