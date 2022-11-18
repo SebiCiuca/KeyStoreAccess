@@ -97,11 +97,17 @@ namespace UCAE_KeyStore
                 using (var reader = new StreamReader(stdin))
                 {
                     m_Logger.Debug("Reading from stream...");
-                    while (reader.Peek() >= 0)
+                    //while (reader.Peek() >= 0)
+                    //{
+                    //    m_Logger.Debug("We are in reading process...please wait");
+                    //    int result = reader.Read(buffer, 0, buffer.Length);
+                    //    m_Logger.Debug($"Read {result} numer of chars");
+                    //}
+
+                    var offset = 0;
+                    while (offset < length && reader.Peek() >= 0)
                     {
-                        m_Logger.Debug("We are in reading process...please wait");
-                        int result = reader.Read(buffer, 0, buffer.Length);
-                        m_Logger.Debug($"Read {result} numer of chars");
+                        offset += reader.Read(buffer, offset, length - offset);
                     }
                     m_Logger.Debug("Read finished");
                 }

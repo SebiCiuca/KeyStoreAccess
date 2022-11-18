@@ -40,6 +40,7 @@ export const getLogs = async () => {
 export const syncCertificates = async (certs) => {
      var command = commands[1];
      console.log("Sending commnand " + command.Id);
+     console.log(certs);
      await sendNativeMessageV2(command.Id, certs);
 }
 

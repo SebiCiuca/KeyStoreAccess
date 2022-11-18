@@ -10,15 +10,11 @@
 </head>
 
 <body style="width: 400px; background-color: rgb(176, 232, 247);" class="container-lg mw-100">
-  <button type="button" class="btn btn-primary btn-lg btn-block d-block" id="btnAuthorize">Authorize</button>
-  <button type="button" class="btn btn-primary btn-lg btn-block d-none" id="btnSyncCertificates">Sync</button>
-  <!-- <button class="btn btn-primary" id="btnGetLogs">Logs</button> -->
-  <!-- <div class="form-group">
-    <label for="exampleFormControlTextarea1">Logs</label>
-    <textarea class="form-control rounded-0" id="logsArea" rows="10"></textarea>
-  </div> -->
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong id="alert-strong-message"></strong><p id="alert-message"></p>
+  <button id="btnAuthorize" type="button" class="btn btn-primary btn-lg btn-block d-block">Authorize</button>
+  <button id="btnSyncCertificates" type="button" class="btn btn-primary btn-lg btn-block d-none">Sync</button>
+  <div id="mainAlert" class="alert alert-warning alert-dismissible fade" role="alert">
+    <strong id="alert-strong-message"></strong>
+    <p id="alert-message"></p>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>

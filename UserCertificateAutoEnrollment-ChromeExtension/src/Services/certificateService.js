@@ -18,4 +18,6 @@ export const syncCertificates = async () => {
    console.log("8.Certs sent successfully to client");
    console.log(certUploadResponse);
    console.log("9. Client response");
+
+   return certUploadResponse;
 }

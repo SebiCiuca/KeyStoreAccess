@@ -23,6 +23,7 @@ export const getSessionKey = async () => {
 };
 
 export const deleteSessionKey = async() => {
+   console.log("This is called");
    return deleteLocalStorageValue(sessionKeyLocalStorage)
 }
 

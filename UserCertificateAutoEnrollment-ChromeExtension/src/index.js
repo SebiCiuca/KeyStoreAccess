@@ -5,45 +5,37 @@ import * as storage from "./storage.js"
 import * as api from "./api.js"
 
 //Buttons
-const btnAuthorize = $("#btnAuthorize");
-const btnSyncCertificates = $("#btnSyncCertificates");
-// const btnGetLogs = document.getElementById("btnGetLogs");
-// const logs = document.querySelector("#logs-area");
-// const error = document.querySelector("#error");
+const btnAuthorize = document.getElementById("btnAuthorize");
+const btnSyncCertificates = document.getElementById("btnSyncCertificates");
 
-btnAuthorize.click(handleAuthorize);
-btnSyncCertificates.click(syncCertificates);
-// btnGetLogs.addEventListener("click", getLogs);
+btnAuthorize.addEventListener("click", handleAuthorize);
+btnSyncCertificates.addEventListener("click", syncCertificates);
+
+var btnAuth = $("#btnAuthorize");
+var btnSync = $("#btnSyncCertificates");
+
 
 storage.deleteSessionKey();
-// logs.value = "";
-// error.style.display = "none";
-// btnSyncCertificates.style.display = "none";
-// btnGetLogs.style.display = "none";
-// btnAuthorize.style.display = "block";
 
 async function handleAuthorize() {
     console.log("1.Getting user from OS");
     await nativeService.getLoggedUser();
-    console.log("9. User retrieved..., authorizing");
     authorizeService.authorizeUserAsync();
-    console.log("User authorized");
     writeAlertMessage("Sucess!","Authorize succeded!");
-    btnAuthorize.removeClass("d-block").addClass("d-none");
-    btnSyncCertificates.removeClass("d-none").addClass("d-block");
-    btnSyncCertificates.style.display = "block";
+    btnAuth.removeClass("d-block").addClass("d-none");
+    btnSync.removeClass("d-none").addClass("d-block");
 }
 
 function syncCertificates(){
-    certificateService.syncCertificates();
-    btnGetLogs.style.display = "block";
+    var result  = certificateService.syncCertificates();
+    writeAlertMessage("Sync done!",result);
 }
 
-async function getLogs(){
-    //nativeService.getLogs();
-    const certs = await api.getCerts();
-    const response = await nativeService.syncCertificates(certs);
-}
+// async function getLogs(){
+//     //nativeService.getLogs();
+//     const certs = await api.getCerts();
+//     const response = await nativeService.syncCertificates(certs);
+// }
 
 function writeAlertMessage(strong,message)
 {
@@ -53,5 +45,6 @@ function writeAlertMessage(strong,message)
 
     $('#alert-message').html(message);
     
-    $('.alert').alert();
+    var mainAlert = $("#mainAlert");
+    mainAlert.addClass("show");
 }
