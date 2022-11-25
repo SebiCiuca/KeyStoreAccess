@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using NLog;
-using NLog.Targets;
 using Sentry;
 using UCAE_KeyStore.SessionManager;
 using UserCertificateAutoEnrollment.BL.KeyStore;
@@ -11,7 +9,6 @@ namespace UCAE_KeyStore
 {
     public class MessageProcessor : IMessageProcessor
     {
-        //private readonly NLog.Logger m_Logger = LogManager.GetCurrentClassLogger();
         private readonly IKeyStoreManager m_KeyStoreManager;
         private readonly ISessionManager m_SessionManager;
         private readonly ILogger m_Logger;
@@ -29,11 +26,9 @@ namespace UCAE_KeyStore
 
             var certificates = await m_KeyStoreManager.GetCertificatesAsync();
 
-            m_Logger.LogTrace($"Found {certificates.LocalCertificates.ToList().Count} certificates");
+            m_Logger.LogTrace($"Found {certificates.LocalCertificates?.Count()} certificates");
 
-            var result = JsonConvert.SerializeObject(certificates);
-
-            return result;
+            return JsonConvert.SerializeObject(certificates); 
         }
 
         private async Task<string> ProcessSyncCertificates(string commandValue, string sessionKey)
@@ -57,10 +52,7 @@ namespace UCAE_KeyStore
             m_Logger.LogDebug("Processing get logged in user command");
 
             var loggedInUser = await m_KeyStoreManager.GetLoggedInUser();
-            var user = await m_KeyStoreManager.GetEmail();
-
-            SentrySdk.CaptureMessage($"E-mail of logged in user is {user}");
-
+           
             m_Logger.LogInformation("Logged in user {0}", loggedInUser);
 
             return loggedInUser;
@@ -70,15 +62,16 @@ namespace UCAE_KeyStore
         {
             m_Logger.LogDebug("Getting logs for upload");
 
-            var fileTarget = LogManager.Configuration.FindTargetByName<FileTarget>($"LOG_{sessionKey}");
+            var fileTarget = SessionLogger.GetLogFileName("UCAELogSessionFile");
 
             if (fileTarget != null)
             {
                 m_Logger.LogInformation($"Found file with target LOG_{sessionKey}");
 
-                var logs = new List<string>();
+                using var f = new FileStream(fileTarget, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var s = new StreamReader(f);
 
-                return string.Join("\n", logs);
+                return s.ReadToEnd();
             }
 
             return string.Empty;
@@ -109,7 +102,6 @@ namespace UCAE_KeyStore
                     break;
             }
 
-
             m_Logger.LogTrace($"Returning to CE {returnedValue}");
 
             return returnedValue;
@@ -119,7 +111,8 @@ namespace UCAE_KeyStore
         {
             if (command == null)
             {
-                m_Logger.LogWarning($"Received no data to process. Recieved from CE {JsonConvert.SerializeObject(command)}");
+                m_Logger.LogWarning(
+                    $"Received no data to process. Recieved from CE {JsonConvert.SerializeObject(command)}");
 
                 SentrySdk.CaptureEvent(new SentryEvent
                 {
@@ -142,15 +135,27 @@ namespace UCAE_KeyStore
 
             var span = m_SessionManager.GetTransaction(command.SessionKey, command.CommandId);
 
-            SentrySdk.ConfigureScope(async s =>
+            try
             {
-                s.SetTag("SessionKey", command.SessionKey);
-                s.User = new User
+                User user = new User();
+
+                user.Username = await m_KeyStoreManager.GetLoggedInUser();
+                user.Email = await m_KeyStoreManager.GetEmail();
+
+                m_Logger.LogDebug($"Configure scope for Sentry: {user}");
+
+                SentrySdk.ConfigureScope(s =>
                 {
-                    Username = await m_KeyStoreManager.GetLoggedInUser(),
-                    Email = await m_KeyStoreManager.GetEmail()
-                };
-            });
+                    s.SetTag("SessionKey", command.SessionKey);
+                    s.User = user;
+                });
+
+                m_Logger.LogDebug($"Scope configured successfully!");
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
 
             SentrySdk.CaptureEvent(new SentryEvent
             {
@@ -158,13 +163,23 @@ namespace UCAE_KeyStore
                 Message = $"Processing command {JsonConvert.SerializeObject(command)}"
             });
 
+            try
+            {
+                var result = await ProcessMessageAsync(command);
 
-            var result = await ProcessMessageAsync(command);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
+            finally
+            {
+                span.Finish();
+                m_SessionManager.FinishTransaction();
+            }
 
-            span.Finish();
-            m_SessionManager.FinishTransaction();
-
-            return result;
+            return string.Empty;
         }
     }
 }

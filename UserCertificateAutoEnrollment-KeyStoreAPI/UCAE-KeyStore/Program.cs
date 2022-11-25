@@ -20,18 +20,10 @@ namespace UCAE_KeyStore
 
             try
             {
-                m_Logger.Debug("Registering DI");
-
                 var serviceProvider = RegisterDependencies.RegisterAppDependencies();
-
-                m_Logger.Debug("DI Registered");
-
                 using (serviceProvider as IDisposable)
                 {
                     var messageProcessor = serviceProvider.GetRequiredService<IMessageProcessor>();
-
-                    m_Logger.Debug($"Created message processor. {messageProcessor.GetType()}");
-
                     JObject command = Read();
                     if (command != null)
                     {
@@ -46,12 +38,15 @@ namespace UCAE_KeyStore
 
                         if (!string.IsNullOrWhiteSpace(ceCommand.SessionKey))
                         {
+                            m_Logger.Info($"Session key found on the call, logging into specific log file.");
+
                             GlobalDiagnosticsContext.Set(NLOG_SESSION_KEY, ceCommand.SessionKey);
                         }
 
                         var responseToSend = messageProcessor.ProcessCommand(ceCommand).Result;
 
-                        m_Logger.Debug("Sending response to CE {0}", JsonConvert.SerializeObject(responseToSend));
+                        m_Logger.Debug("Sending response to CE {0}", 
+                            JsonConvert.SerializeObject(responseToSend));
 
                         if (!string.IsNullOrEmpty(responseToSend))
                         {
@@ -61,13 +56,13 @@ namespace UCAE_KeyStore
                         GlobalDiagnosticsContext.Remove(NLOG_SESSION_KEY);
                     }
                 }
-
             }
             catch (Exception ex)
             {
-                m_Logger.Error(ex.Message);
-                m_Logger.Error(ex, "Stopped program because of exception");
+                m_Logger.Error(ex, $"Stopped program because of exception. Exception message{ex.Message}");
+
                 SentrySdk.CaptureException(ex);
+
                 throw;
             }
             finally
@@ -97,13 +92,6 @@ namespace UCAE_KeyStore
                 using (var reader = new StreamReader(stdin))
                 {
                     m_Logger.Debug("Reading from stream...");
-                    //while (reader.Peek() >= 0)
-                    //{
-                    //    m_Logger.Debug("We are in reading process...please wait");
-                    //    int result = reader.Read(buffer, 0, buffer.Length);
-                    //    m_Logger.Debug($"Read {result} numer of chars");
-                    //}
-
                     var offset = 0;
                     while (offset < length && reader.Peek() >= 0)
                     {

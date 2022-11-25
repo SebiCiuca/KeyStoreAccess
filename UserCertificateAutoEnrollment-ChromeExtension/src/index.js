@@ -13,29 +13,35 @@ btnSyncCertificates.addEventListener("click", syncCertificates);
 
 var btnAuth = $("#btnAuthorize");
 var btnSync = $("#btnSyncCertificates");
-
+var spinner =  $("#spinner");
+var data =  $("#data")
 
 storage.deleteSessionKey();
+hideSpinner();
 
 async function handleAuthorize() {
+    showSpinner();
     console.log("1.Getting user from OS");
     await nativeService.getLoggedUser();
     authorizeService.authorizeUserAsync();
     writeAlertMessage("Sucess!","Authorize succeded!");
     btnAuth.removeClass("d-block").addClass("d-none");
     btnSync.removeClass("d-none").addClass("d-block");
+    hideSpinner();
 }
 
-function syncCertificates(){
-    var result  = certificateService.syncCertificates();
+async function syncCertificates(){
+    showSpinner();
+    var result  = await certificateService.syncCertificates();
     writeAlertMessage("Sync done!",result);
+
+    await getLogs();
+    hideSpinner();
 }
 
-// async function getLogs(){
-//     //nativeService.getLogs();
-//     const certs = await api.getCerts();
-//     const response = await nativeService.syncCertificates(certs);
-// }
+async function getLogs(){
+    nativeService.getLogs();
+}
 
 function writeAlertMessage(strong,message)
 {
@@ -48,3 +54,14 @@ function writeAlertMessage(strong,message)
     var mainAlert = $("#mainAlert");
     mainAlert.addClass("show");
 }
+
+function hideSpinner() {   
+    spinner.removeClass("d-block").addClass("d-none");
+    data.removeClass("d-none").addClass("d-block");
+} 
+
+function showSpinner() {
+    spinner.removeClass("d-none").addClass("d-block");
+    data.removeClass("d-block").addClass("d-none");
+} 
+
