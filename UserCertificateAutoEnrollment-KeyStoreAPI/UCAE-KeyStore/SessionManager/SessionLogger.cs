@@ -2,7 +2,7 @@
 using NLog.Targets;
 using NLog;
 
-namespace UCAE_KeyStore
+namespace UCAE_KeyStore.SessionManager
 {
     public static class SessionLogger
     {

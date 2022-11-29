@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserCertificateAutoEnrollment.BL.KeyStore;
-using UserCertificateAutoEnrollment.BL.Session;
 
 namespace UCAE_KeyStoreSelfHostedApi.Controllers
 {
@@ -9,13 +8,11 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
     public class KeyStoreController : Controller
     {
         private readonly IKeyStoreFactory m_KeyStoreFactory;
-        private readonly ISessionProvider m_SessionProvider;
         private readonly NLog.Logger m_Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public KeyStoreController(IKeyStoreFactory keyStoreFactory, ISessionProvider sessionProvider)
+        public KeyStoreController(IKeyStoreFactory keyStoreFactory)
         {
             m_KeyStoreFactory = keyStoreFactory;
-            m_SessionProvider = sessionProvider;
         }
 
         [HttpGet]

@@ -1,12 +1,7 @@
 using Microsoft.Extensions.Hosting.WindowsServices;
 using NLog;
 using NLog.Web;
-using UCAE_KeyStoreSelfHostedApi;
-using UserCertificateAutoEnrollment.BL;
 using UserCertificateAutoEnrollment.BL.Common.Contracts;
-using UserCertificateAutoEnrollment.BL.KeyStore;
-using UserCertificateAutoEnrollment.BL.Security;
-using UserCertificateAutoEnrollment.BL.Session;
 
 var logger = NLog.LogManager.Setup().GetCurrentClassLogger();
 logger.Debug("init main");
@@ -28,10 +23,10 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    builder.Services.AddSingleton<ISessionProvider, SessionManager>();
-    builder.Services.AddTransient<ICryptoService, CryptoService>();
-    builder.Services.AddTransient<IHttpClient, UserCertificateAutoEnrollment.BL.Http.HttpClient>();
-    builder.Services.ConfigureKeyStoreServices();
+    //builder.Services.AddSingleton<ISessionProvider, SessionManager>();
+    //builder.Services.AddTransient<ICryptoService, CryptoService>();
+    //builder.Services.AddTransient<IHttpClient, UserCertificateAutoEnrollment.BL.Http.HttpClient>();
+    //builder.Services.ConfigureKeyStoreServices();
 
     builder.Host.UseWindowsService();
     builder.Host.UseNLog();

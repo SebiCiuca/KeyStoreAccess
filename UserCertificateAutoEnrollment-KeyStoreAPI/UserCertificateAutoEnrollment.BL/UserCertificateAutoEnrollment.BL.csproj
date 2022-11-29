@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Http\**" />
+    <Compile Remove="Session\**" />
+    <EmbeddedResource Remove="Http\**" />
+    <EmbeddedResource Remove="Session\**" />
+    <None Remove="Http\**" />
+    <None Remove="Session\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="PInvoke.NCrypt" Version="0.7.124" />
   </ItemGroup>
 
