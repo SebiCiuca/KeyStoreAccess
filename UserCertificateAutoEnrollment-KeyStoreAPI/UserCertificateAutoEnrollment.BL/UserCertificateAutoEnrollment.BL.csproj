@@ -8,11 +8,18 @@
 
   <ItemGroup>
     <Compile Remove="Http\**" />
+    <Compile Remove="Security\**" />
     <Compile Remove="Session\**" />
     <EmbeddedResource Remove="Http\**" />
+    <EmbeddedResource Remove="Security\**" />
     <EmbeddedResource Remove="Session\**" />
     <None Remove="Http\**" />
+    <None Remove="Security\**" />
     <None Remove="Session\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ConfigurationExtentions.cs" />
   </ItemGroup>
 
   <ItemGroup>
