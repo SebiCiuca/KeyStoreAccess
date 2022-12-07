@@ -1,13 +1,13 @@
 import axios from "axios";
 import * as storage from "./storage.js"
 
-const baseUrl = "https://localhost:7095";
-const authUser = "authenticate?domain=";
+const baseUrl = "https://saml-si.allianz.com/";
+const authUser = "ginpw/Azure/loginNoPromptUserCA";
 const status = "status"
 const log = "log"
 
 export const loginUser = async (domain) => {
-    const loginUrl = `${baseUrl}/${authUser}${domain}`
+    const loginUrl = `${baseUrl}/${authUser}`
 
     var response = await axios.get(loginUrl)
         .then(function (response) {

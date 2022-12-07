@@ -7,7 +7,7 @@
     ],
     "description": "Native App for Certificate Auto Enrollment",
     "name": "com.allianz.usercertificateautoenrollment",
-    "path": "D:\\Projects\\Work\\Allianz\\KeyStoreAccess\\UserCertificateAutoEnrollment-KeyStoreAPI\\UCAE-KeyStore\\bin\\Debug\\net6.0\\UCAE-KeyStore.exe",
+    "path": "D:\\0_Work\\Computacenter\\KeyStoreAccess\\UserCertificateAutoEnrollment-KeyStoreAPI\\UCAE-KeyStore\bin\\Debug\net6.0\\UCAE-KeyStore.exe",
     "type": "stdio"
 }
 

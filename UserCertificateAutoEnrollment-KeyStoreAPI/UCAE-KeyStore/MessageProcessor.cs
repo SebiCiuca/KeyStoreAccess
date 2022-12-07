@@ -28,7 +28,7 @@ namespace UCAE_KeyStore
 
             m_Logger.LogTrace($"Found {certificates.LocalCertificates?.Count()} certificates");
 
-            return JsonConvert.SerializeObject(certificates); 
+            return JsonConvert.SerializeObject(certificates);
         }
 
         private async Task<string> ProcessSyncCertificates(string commandValue, string sessionKey)
@@ -52,7 +52,7 @@ namespace UCAE_KeyStore
             m_Logger.LogDebug("Processing get logged in user command");
 
             var loggedInUser = await m_KeyStoreManager.GetLoggedInUser();
-           
+
             m_Logger.LogInformation("Logged in user {0}", loggedInUser);
 
             return loggedInUser;
@@ -71,7 +71,14 @@ namespace UCAE_KeyStore
                 using var f = new FileStream(fileTarget, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using var s = new StreamReader(f);
 
-                return s.ReadToEnd();
+                var logs = s.ReadToEnd();
+
+                if (!string.IsNullOrWhiteSpace(logs))
+                {
+                    var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(logs); 
+                    
+                    return System.Convert.ToBase64String(plainTextBytes);
+                }
             }
 
             return string.Empty;

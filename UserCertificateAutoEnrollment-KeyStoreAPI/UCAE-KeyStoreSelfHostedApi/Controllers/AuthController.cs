@@ -12,12 +12,10 @@ namespace UCAE_KeyStoreSelfHostedApi.Controllers
     {
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IKeyStoreFactory m_KeyStoreFactory;
-        private readonly IHttpClient m_HttpClient;
 
-        public AuthController(IKeyStoreFactory keyStoreFactory, IHttpClient httpClient)
+        public AuthController(IKeyStoreFactory keyStoreFactory)
         {
             m_KeyStoreFactory = keyStoreFactory;
-            m_HttpClient = httpClient;            
         }
 
         [HttpGet]

@@ -6,7 +6,7 @@ export const authorizeUserAsync = async () => {
     //get the unique value after authroization
     var domain = await storage.getLoggedInUser();
     console.log("9. Domain" + domain);
-    //await api.loginUser(domain);
+    await api.loginUser(domain);
     storage.saveSessionKey(makeid(10));
      var sessionKey = await storage.getSessionKey();
     console.log("11. Session key " + sessionKey);

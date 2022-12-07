@@ -6,8 +6,6 @@ using Sentry;
 using UCAE_KeyStore.SessionManager;
 using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.KeyStore;
-using UserCertificateAutoEnrollment.BL.Security;
-using UserCertificateAutoEnrollment.BL.Session;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace UCAE_KeyStore.Helpers
@@ -32,7 +30,6 @@ namespace UCAE_KeyStore.Helpers
                 .AddSingleton<IMessageProcessor, MessageProcessor>()
                 .AddTransient<IKeyStoreFactory, KeyStoreFactory>()
                 .AddSingleton<ISessionManager, SessionManager.SessionManager>()
-                .AddTransient<ICryptoService, CryptoService>()
                 .BuildServiceProvider();
 
 
