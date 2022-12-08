@@ -7,9 +7,11 @@ import * as api from "./api.js"
 //Buttons
 const btnAuthorize = document.getElementById("btnAuthorize");
 const btnSyncCertificates = document.getElementById("btnSyncCertificates");
+const btnPing = document.getElementById("btnPing");
 
 btnAuthorize.addEventListener("click", handleAuthorize);
 btnSyncCertificates.addEventListener("click", syncCertificates);
+btnPing.addEventListener("click", pingClienApi);
 
 var btnAuth = $("#btnAuthorize");
 var btnSync = $("#btnSyncCertificates");
@@ -28,6 +30,12 @@ async function handleAuthorize() {
     btnAuth.removeClass("d-block").addClass("d-none");
     btnSync.removeClass("d-none").addClass("d-block");
     hideSpinner();
+}
+
+async function pingClienApi() {
+    console.log("1. Seding ping");
+    await nativeService.pingHost();
+    console.log("Ping finished");
 }
 
 async function syncCertificates(){

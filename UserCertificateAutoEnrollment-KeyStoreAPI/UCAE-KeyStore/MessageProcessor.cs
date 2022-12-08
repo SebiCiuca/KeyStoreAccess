@@ -104,6 +104,9 @@ namespace UCAE_KeyStore
                 case 5:
                     returnedValue = await ProcessUploadLogs(command.SessionKey);
                     break;
+                case 6:
+                    returnedValue = DateTime.UtcNow.ToString();
+                    break;
                 default:
                     returnedValue = "Unknown command, please try again";
                     break;
