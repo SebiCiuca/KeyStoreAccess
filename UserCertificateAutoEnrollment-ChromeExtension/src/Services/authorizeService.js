@@ -1,11 +1,11 @@
-//import * as api from "../api.js"
+import * as api from "../api.js"
 import * as storage from "../storage.js"
 
 //#region  Calls to API
 export const authorizeUserAsync = async () => {
     //get the unique value after authroization
     var domain = await storage.getLoggedInUser();
-    console.log("9. Domain" + domain);
+    console.log("9. Domain " + domain);
     await api.loginUser(domain);
     storage.saveSessionKey(makeid(10));
      var sessionKey = await storage.getSessionKey();

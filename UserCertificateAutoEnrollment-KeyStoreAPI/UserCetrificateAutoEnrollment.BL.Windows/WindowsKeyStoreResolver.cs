@@ -1,14 +1,9 @@
 ﻿using NLog;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
-using System.Xml;
 using UserCertificateAutoEnrollment.BL.Common;
 using UserCertificateAutoEnrollment.BL.Common.Contracts;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace UserCetrificateAutoEnrollment.BL.Windows
 {
