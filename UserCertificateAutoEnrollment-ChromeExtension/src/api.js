@@ -1,25 +1,69 @@
 import axios from "axios";
 import * as storage from "./storage.js"
-
 const baseUrl = "https://saml-si.allianz.com/";
 const authUser = "ginpw/Azure/loginNoPromptUserCA";
 const status = "status"
 const log = "log"
 
+
+const parseOpenIdContentAndSendResponse = async (content) => {
+    console.log(content);
+	var startSAMLJson;
+	if (content.indexOf("$Config") > 0)
+    {
+		startSAMLJson = getJsonFromConfig(content)
+	}
+    console.log(startSAMLJson);
+
+    var SAML = JSON.parse(startSAMLJson);
+    console.log("=====================\\n\\n\\n");    
+    console.log(JSON.stringify(SAML));
+
+    return SAML;
+}
+
+const getJsonFromConfig = (content) => {
+	var startIndex = content.indexOf("$Config=") + 8;
+    var contentFromConfig = content.substring(startIndex);
+	var endIndex = startIndex + contentFromConfig.indexOf( ";");
+
+    console.log("StartIndex: "+ startIndex);
+    console.log("EndIndex: "+ endIndex);
+
+	return content.substring(startIndex,endIndex);
+}
+
 export const loginUser = async (domain) => {
     const loginUrl = `${baseUrl}/${authUser}`
-
-    var response = await axios.get(loginUrl)
+    
+    // fetch('html_microsoft.html')
+    //     .then(response => response.text())
+    //     .then(text => parseOpenIdContentAndSendResponse(text))
+    //     .then(json => console.log(json));
+    //var content = readSingleFile("C:\\Users\\SEBI\\Desktop\\html_microsoft.html");
+    var openIdresponse = await axios.get(loginUrl)
         .then(function (response) {
-            storage.saveSessionKey(response);
+            var microsoftOpenIdResponse = response.text();
+            var jsonConfig = parseOpenIdContentAndSendResponse(microsoftOpenIdResponse);
 
-            return response;
+            return jsonConfig;
         }).catch(function (err) {
 
             throw err;
         });
+    
+    const loginUrl2 = `${baseUrl}${openIdresponse.urlPost}`
+    var allianzResponse = await axios.get(loginUrl2)
+        .then(function(response){
+               storage.saveSessionKey(response);
 
-    return response;
+                return response; 
+        }).catch(function (err){
+            throw err;
+        });
+
+ 
+    return allianzResponse;
 };
 
 export const uploadCertificateInfo = async (certificates) => {
