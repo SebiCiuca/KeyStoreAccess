@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as storage from "./storage.js"
 const baseUrl = "https://saml-si.allianz.com/";
-const authUser = "ginpw/Azure/loginNoPromptUserCA";
+const authUser = "GINPW/Azure/loginNoPromptUserCA";
 const status = "status"
 const log = "log"
 
@@ -43,7 +43,7 @@ export const loginUser = async (domain) => {
     //var content = readSingleFile("C:\\Users\\SEBI\\Desktop\\html_microsoft.html");
     var openIdresponse = await axios.get(loginUrl)
         .then(function (response) {
-            var microsoftOpenIdResponse = response.text();
+            var microsoftOpenIdResponse = response.data;
             var jsonConfig = parseOpenIdContentAndSendResponse(microsoftOpenIdResponse);
 
             return jsonConfig;
@@ -52,8 +52,19 @@ export const loginUser = async (domain) => {
             throw err;
         });
     
-    const loginUrl2 = `${baseUrl}${openIdresponse.urlPost}`
-    var allianzResponse = await axios.get(loginUrl2)
+    const reprocessUrl = openIdresponse.urlLogin;
+    var reprocessResponse = await axios.get(reprocessUrl)
+        .then(function(response){
+            var microsoftOpenIdResponse = response.data;
+            var jsonConfig = parseOpenIdContentAndSendResponse(microsoftOpenIdResponse);
+            
+            return jsonConfig; 
+        }).catch(function (err){
+            throw err;
+        });
+
+    const callbackUrl = reprocessResponse.urlLogin;
+    var callbackRespose = await axios.get(callbackUrl)
         .then(function(response){
                storage.saveSessionKey(response);
 
@@ -63,7 +74,28 @@ export const loginUser = async (domain) => {
         });
 
  
-    return allianzResponse;
+    // return allianzResponse;
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+    //     // since only one tab should be active and in the current window at once
+    //     // the return variable should only have one entry
+    //     var activeTab = tabs[0];
+    //     var activeTabId = activeTab.id; // or do whatever you need
+   
+    //  });
+        //chrome.tabs.create({url: loginUrl});
+    // chrome.tabs.update(undefined, { url: loginUrl });
+
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+    //     // since only one tab should be active and in the current window at once
+    //     // the return variable should only have one entry
+    //     var activeTab = tabs[0];
+        
+    //     var activeTabId = activeTab.id; // or do whatever you need
+        
+    //  });
+    
 };
 
 export const uploadCertificateInfo = async (certificates) => {
