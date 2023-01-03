@@ -99,28 +99,28 @@ export const loginUser = async (domain) => {
 };
 
 export const uploadCertificateInfo = async (certificates) => {
-    const uploadCertificateInfo = `${baseUrl}/${status}`
+    const uploadCertificateInfo = `${baseUrl}${status}`
     const headers = {
         'Content-Type': 'application/json',
     }
     const data = {
         'installed': certificates,
-        'handle': storage.getSessionKey()
+        'handle': await storage.getSessionKey()
     };
     
-    return await getCerts();
-    // var response = await axios.post(uploadCertificateInfo, data, { headers })
-    //     .then(function (response) {
-    //         console.log(response);
+    //return await getCerts();
+    var response = await axios.post(uploadCertificateInfo, data, { headers })
+        .then(function (response) {
+            console.log(response);
 
-    //         return response;
-    //     }).catch(function (err) {
+            return response;
+        }).catch(function (err) {
 
-    //         throw err;
+            throw err;
 
-    //     });
+        });
 
-    // return response;
+    return response;
 }
 
 export const getCerts = async() => {

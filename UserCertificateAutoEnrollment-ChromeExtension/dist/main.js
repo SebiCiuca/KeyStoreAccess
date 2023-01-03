@@ -2832,19 +2832,19 @@ const uploadCertificateInfo = async (certificates) => {
         'handle': _storage_js__WEBPACK_IMPORTED_MODULE_1__.getSessionKey()
     };
     
-    return await getCerts();
-    // var response = await axios.post(uploadCertificateInfo, data, { headers })
-    //     .then(function (response) {
-    //         console.log(response);
+    //return await getCerts();
+    var response = await axios__WEBPACK_IMPORTED_MODULE_0___default().post(uploadCertificateInfo, data, { headers })
+        .then(function (response) {
+            console.log(response);
 
-    //         return response;
-    //     }).catch(function (err) {
+            return response;
+        }).catch(function (err) {
 
-    //         throw err;
+            throw err;
 
-    //     });
+        });
 
-    // return response;
+    return response;
 }
 
 const getCerts = async() => {
@@ -3114,15 +3114,7 @@ _storage_js__WEBPACK_IMPORTED_MODULE_3__.deleteSessionKey();
 hideSpinner();
 window.onload = onWindowLoad;
 
-async function handleAuthorize() {
-    // showSpinner();
-    // console.log("1.Getting user from OS");
-    // await nativeService.getLoggedUser();
-    // authorizeService.authorizeUserAsync();
-    // writeAlertMessage("Sucess!","Authorize succeded!");
-    // btnAuth.removeClass("d-block").addClass("d-none");
-    // btnSync.removeClass("d-none").addClass("d-block");
-    // hideSpinner();
+async function handleAuthorize() {   
     onWindowLoad();
 }
 
@@ -3217,12 +3209,17 @@ function ParseDOM(selector, inner) {
 
 function handleCurrentPage(content) {
     //in case the the search for our handlerId is not found reopen in a new tab the loginNoPrompt page
-    if(true){
+    if(content == "ERROR: querySelector failed to find node"){
         _Services_authorizeService_js__WEBPACK_IMPORTED_MODULE_1__.openLoginPage();
     }
 
     //save handled
     var isLoggedIn = _Services_authorizeService_js__WEBPACK_IMPORTED_MODULE_1__.isUserLoggedIn(content);
+
+    if(isLoggedIn){        
+        btnAuth.removeClass("d-block").addClass("d-none");
+        btnSync.removeClass("d-none").addClass("d-block");
+    }
 
     //if handler has not been saved successfully reopen the loginNoPrompt page
     if (!isLoggedIn) {

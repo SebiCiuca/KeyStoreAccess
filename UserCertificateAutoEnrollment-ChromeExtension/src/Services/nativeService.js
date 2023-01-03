@@ -15,14 +15,7 @@ const commands = [
      { Id: 3, Description: "Send this with a ThumbprintID to make a certificate as auth certificate" },
      { Id: 4, Description: "Get current domain user" },
      { Id: 5, Description: "Get session logs" },
-     { Id: 6, Description: "Ping" },
 ]
-
-export const pingHost = async () => {
-     var command = commands[5];
-     console.log("Pinging host to test connection");
-     await sendNativeMessageV2(command.Id);
-}
 
 export const getCertificates = async () => {
      var command = commands[0];
@@ -40,8 +33,7 @@ export const getLoggedUser = async () => {
 export const getLogs = async () => {
      var command = commands[4];
      var logLevel = "5";
-     await sendNativeMessageV2(command.Id);
-     
+     await sendNativeMessageV2(command.Id);     
 }
 
 export const syncCertificates = async (certs) => {
@@ -80,8 +72,7 @@ async function onNativeMessage(message) {
 
      switch (commandInProgress) {
           case 1:
-               // code block
-               break;
+               return message;
           case 2:
                console.log(message);
                break;
@@ -93,9 +84,6 @@ async function onNativeMessage(message) {
                break;
           case 5:
                await UploadLogs(message);
-               break;
-          case 6:
-               console.log("Host reposended with message: " + message);
                break;
           default:
           // code block

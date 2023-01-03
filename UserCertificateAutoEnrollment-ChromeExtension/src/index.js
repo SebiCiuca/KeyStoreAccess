@@ -22,15 +22,7 @@ storage.deleteSessionKey();
 hideSpinner();
 window.onload = onWindowLoad;
 
-async function handleAuthorize() {
-    // showSpinner();
-    // console.log("1.Getting user from OS");
-    // await nativeService.getLoggedUser();
-    // authorizeService.authorizeUserAsync();
-    // writeAlertMessage("Sucess!","Authorize succeded!");
-    // btnAuth.removeClass("d-block").addClass("d-none");
-    // btnSync.removeClass("d-none").addClass("d-block");
-    // hideSpinner();
+async function handleAuthorize() {   
     onWindowLoad();
 }
 
@@ -89,7 +81,7 @@ function onWindowLoad() {
                 // injectImmediately: true, 
                 // uncomment this to make it execute straight away, other wise it will wait for document_idle
                 func: ParseDOM,
-                args: ['#syntax', true]
+                args: ['pre', true]
             });
         })
         //parse the filtered DOM object of current opened tab
@@ -131,6 +123,11 @@ function handleCurrentPage(content) {
 
     //save handled
     var isLoggedIn = authorizeService.isUserLoggedIn(content);
+
+    if(isLoggedIn){        
+        btnAuth.removeClass("d-block").addClass("d-none");
+        btnSync.removeClass("d-none").addClass("d-block");
+    }
 
     //if handler has not been saved successfully reopen the loginNoPrompt page
     if (!isLoggedIn) {
